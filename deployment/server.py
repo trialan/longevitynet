@@ -5,9 +5,9 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 
-from longevity.modelling.model import preprocess, ResNet50
-from longevity.modelling.train import generate_dataset
-from longevity.modelling.utils import undo_min_max_scaling
+from life_expectancy.modelling.model import preprocess, ResNet50
+from life_expectancy.modelling.train import generate_dataset
+from life_expectancy.modelling.utils import undo_min_max_scaling
 
 app = Flask(__name__)
 
