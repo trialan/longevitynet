@@ -1,0 +1,11 @@
+PIL
+flask
+io
+numpy
+torch
+torchvision
+efficientnet_pytorch
+cv2
+tqdm
+glob
+datetime
