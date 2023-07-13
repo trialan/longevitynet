@@ -1,7 +1,6 @@
 datetime
 efficientnet_pytorch
 flask
-glob
 matplotlib
 numpy
 opencv-python
