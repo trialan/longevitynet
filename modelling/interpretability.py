@@ -2,7 +2,7 @@ import math
 import numpy as np
 import torch
 
-from modelling.train import _generate_dataset, _get_train_test_split
+from life_expectancy.modelling.train import _generate_dataset, _get_train_test_split
 
 DATASET_V2_MAX_TARGET = 0.918367326259613
 DATASET_V2_MIN_TARGET = 0.0

@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import torch
 
-from modelling.utils import min_max_scale
+from life_expectancy.modelling.utils import min_max_scale
 
 # Preprocessing for images
 preprocess = transforms.Compose([

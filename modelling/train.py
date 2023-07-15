@@ -8,7 +8,7 @@ import numpy as np
 from torch.utils.data import DataLoader, random_split, Subset
 import matplotlib.pyplot as plt
 
-from modelling.model import FaceAgeDataset, ResNet50
+from life_expectancy.modelling.model import FaceAgeDataset, ResNet50
 
 import warnings
 warnings.simplefilter("ignore")
