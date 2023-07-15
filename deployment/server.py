@@ -12,7 +12,7 @@ from life_expectancy.modelling.utils import undo_min_max_scaling
 app = Flask(__name__)
 
 model = ResNet50()
-model.load_state_dict(torch.load('deployment/model.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load('life_expectancy/deployment/model.pth', map_location=torch.device('cpu')))
 model.eval()
 dataset = generate_dataset()
 
