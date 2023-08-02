@@ -10,7 +10,7 @@ BATCH_SIZE = 1
 
 
 if __name__ == "__main__":
-    _, test_dataloader = get_dataloader()
+    _, test_dataloader = get_dataloaders()
 
     model = ResNet50()
     model.load_state_dict(torch.load('saved_model_binaries/best_model_20230802_0_0100886231469399994.pth', map_location=device))
