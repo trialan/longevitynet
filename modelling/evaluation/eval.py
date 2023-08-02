@@ -1,3 +1,4 @@
+import tqdm
 import torch
 import glob
 import numpy as np
@@ -20,7 +21,7 @@ def get_test_preds():
     predictions = []
 
     with torch.no_grad():
-        for imgs, _, _, _ in test_dataloader:
+        for imgs, _, _, _ in tqdm.tqdm(test_dataloader):
             imgs = imgs.to(device)
 
             output = model(imgs)
