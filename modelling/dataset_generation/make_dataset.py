@@ -33,7 +33,7 @@ def json_file_to_dataframe(file_path):
 
 
 if __name__ == '__main__': 
-    df = json_file_to_dataframe('fourteen_thousand_rows.json')
+    df = json_file_to_dataframe('/Users/thomasrialan/code/longevity_project/datasets/fourteen_thousand_rows.json')
     errors = []
 
     for i in tqdm.tqdm(range(len(df))):

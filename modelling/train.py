@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader, random_split, Subset
 import matplotlib.pyplot as plt
 
 from life_expectancy.modelling.model import FaceAgeDataset, ResNet50
+from life_expectancy.modelling.loss import SensitiveToYouthAndPositiveAgesLoss
 
 import warnings
 warnings.simplefilter("ignore")
@@ -77,6 +78,7 @@ if __name__ == '__main__':
     model = ResNet50().to(device)
 
     criterion = torch.nn.MSELoss()
+    #criterion = SensitiveToYouthAndPositiveAgesLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
     train_losses = []
@@ -88,14 +90,13 @@ if __name__ == '__main__':
         # Train
         model.train()
         train_loss = 0
-        for imgs, age, life_expectancy, target in tqdm.tqdm(train_dataloader):
+        for imgs, _, _, target in tqdm.tqdm(train_dataloader):
             imgs = imgs.to(device)
-            age = age.to(device)
             target = target.to(device)
 
             optimizer.zero_grad()
 
-            output = model(imgs, age)
+            output = model(imgs)
             loss = criterion(output, target)
             train_loss += loss.item()
             loss.backward()
@@ -106,12 +107,11 @@ if __name__ == '__main__':
         model.eval()
         test_loss = 0
         with torch.no_grad():
-            for imgs, age, life_expectancy, target in tqdm.tqdm(test_dataloader):
+            for imgs, _, _, target in tqdm.tqdm(test_dataloader):
                 imgs = imgs.to(device)
-                age = age.to(device)
                 target = target.to(device)
 
-                output = model(imgs, age)
+                output = model(imgs)
                 loss = criterion(output, target)
                 test_loss += loss.item()
         test_losses.append(test_loss)

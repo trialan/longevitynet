@@ -54,7 +54,7 @@ def _get_candidate_captions(img):
     candidate_captions = [img.next_element.text, img.get('alt')]
     if img.find_next_sibling('div') is not None:
         candidate_captions = candidate_captions.append(img.find_next_sibling('div').text)
-    return candidate_captions
+    return [c for c in candidate_captions if (c is not None)]
 
 
 
