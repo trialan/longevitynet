@@ -9,9 +9,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 1
 
 
-if __name__ == "__main__":
-    _, test_dataloader = get_dataloaders()
-
+def get_test_preds():
     model = ResNet50()
     path = max(glob.glob("saved_model_binaries/*.pth"))
     model.load_state_dict(torch.load(path, map_location=device))
@@ -27,4 +25,5 @@ if __name__ == "__main__":
             output = model(imgs)
             predictions.append(output.item())
 
-    print(predictions)
+    return predictions
+
