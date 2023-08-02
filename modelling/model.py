@@ -53,7 +53,7 @@ class ResNet(nn.Module):
         self.fc2 = nn.Linear(250, 1)
 
     def forward(self, img):
-        x1 = self.cnn(img)
+        x = self.cnn(img)
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
