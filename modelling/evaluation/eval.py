@@ -21,7 +21,7 @@ if __name__ == "__main__":
     predictions = []
 
     with torch.no_grad():
-        for imgs, _, _, _ in dataloader:
+        for imgs, _, _, _ in test_dataloader:
             imgs = imgs.to(device)
 
             output = model(imgs)
