@@ -10,6 +10,7 @@ BATCH_SIZE = 1
 
 
 def get_test_preds():
+    _, test_dataloader = get_dataloaders()
     model = ResNet50()
     path = max(glob.glob("saved_model_binaries/*.pth"))
     model.load_state_dict(torch.load(path, map_location=device))
