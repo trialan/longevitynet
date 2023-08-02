@@ -15,12 +15,8 @@ def rescale_test_loss_to_years(mse, train_max_target, train_min_target):
     return rescaled
 
 
-def rescale_model_output_to_years_dataset_v2(output):
-    return output
-
-
 if __name__ == '__main__': 
-    dataset = _generate_dataset()
+    dataset = generate_dataset()
     train_dataset, test_dataset = _get_train_test_split(dataset)
 
     train_targets = [row[3].item() for row in train_dataset]
