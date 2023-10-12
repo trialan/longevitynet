@@ -12,9 +12,12 @@ from life_expectancy.modelling.utils import undo_min_max_scaling
 app = Flask(__name__)
 
 model = ResNet50()
+"""
+old: needs fixing, don't require age anymore
 model.load_state_dict(torch.load('life_expectancy/deployment/model.pth', map_location=torch.device('cpu')))
 model.eval()
 dataset = generate_dataset()
+"""
 
 
 @app.route('/predict', methods=['POST'])
