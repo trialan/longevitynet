@@ -14,7 +14,7 @@ def get_dataloaders(ds_version, batch_size, seed):
                                   batch_size=batch_size,
                                   shuffle=True)
     test_dataloader = DataLoader(test_dataset,
-                                 batch_size=1,
+                                 batch_size=batch_size,
                                  shuffle=False)
     return train_dataloader, test_dataloader
 

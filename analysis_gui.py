@@ -3,7 +3,7 @@ import torch
 import numpy as np
 
 from life_expectancy.modelling.model import ResNet50
-from life_expectancy.modelling.train import generate_dataset
+from life_expectancy.modelling.data import generate_dataset
 from life_expectancy.modelling.utils import undo_min_max_scaling
 
 class AnalysisGUI:
@@ -58,14 +58,18 @@ class AnalysisGUI:
 def convert_to_years(raw_prediction, dataset):
     min_delta_value = np.min(dataset.deltas)
     max_delta_value = np.max(dataset.deltas)
-    prediction = undo_min_max_scaling(raw_prediction,
+    delta_prediction = undo_min_max_scaling(raw_prediction,
                                       min_val = min_delta_value,
                                       max_val = max_delta_value)
+    prediction = delta_prediction + dataset.mean_life_expectancy
     return prediction
 
 
 if __name__ == '__main__':
-    dataset = generate_dataset()
+    from life_expectancy.modelling.train import DS_VERSION
+    import torch
+    dataset = generate_dataset(DS_VERSION)
     model = ResNet50()
+    model.load_state_dict(torch.load("/Users/thomasrialan/Documents/code/longevity_project/saved_model_binaries/best_model_20231013-145803_0p01107617188245058.pth"))
     app = AnalysisGUI(dataset, model)
 
