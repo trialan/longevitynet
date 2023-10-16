@@ -6,14 +6,14 @@ from torch.utils.data import DataLoader, random_split
 from life_expectancy.modelling.model import FaceAgeDataset, ResNet50
 from life_expectancy.modelling.train import get_dataloaders
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("mps")
 BATCH_SIZE = 1
 
 
-def get_test_preds():
+def get_test_preds(model_path):
     _, test_dataloader = get_dataloaders()
     model = ResNet50()
-    path = max(glob.glob("saved_model_binaries/*.pth"))
+    path = max(glob.glob(model_path))
     model.load_state_dict(torch.load(path, map_location=device))
     model = model.to(device)
     model.eval()

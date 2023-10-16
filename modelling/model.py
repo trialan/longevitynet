@@ -8,7 +8,7 @@ import torch
 
 from life_expectancy.modelling.utils import min_max_scale
 
-# Preprocessing for images
+
 preprocess = transforms.Compose([
     transforms.ToPILImage(),
     transforms.Resize((224, 224)),
