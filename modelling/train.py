@@ -10,7 +10,7 @@ import warnings
 warnings.simplefilter("ignore")
 
 device = torch.device("mps")
-N_EPOCHS = 15
+N_EPOCHS = 3
 SEED = 7457769
 LR = 1e-3 / 3
 BATCH_SIZE = 128
@@ -19,9 +19,12 @@ DS_VERSION = "v3"
 
 if __name__ == '__main__':
     set_seed(SEED)
+    F=0.35
+    print(F)
     train_dataloader, test_dataloader = get_dataloaders(DS_VERSION,
                                                         BATCH_SIZE,
-                                                        SEED)
+                                                        SEED,
+                                                        train_size_fraction=F)
     model = ResNet50().to(device)
     criterion = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
@@ -55,7 +58,7 @@ if __name__ == '__main__':
 
         if test_loss < best_test_loss:
             best_test_loss = test_loss
-            save_model(model, test_loss/len(test_dataloader), epoch)
+            #save_model(model, test_loss/len(test_dataloader), epoch)
 
         print(f"Epoch: {epoch+1}, Train Loss: {train_loss / len(train_dataloader)}, Test Loss: {test_loss / len(test_dataloader)}")
 

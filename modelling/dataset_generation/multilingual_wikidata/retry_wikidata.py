@@ -6,7 +6,7 @@ import pandas as pd
 
 endpoint_url = "https://query.wikidata.org/sparql"
 OUTPUT_DIR = "."
-TARGET_N = 5
+TARGET_N = 100
 
 # Modify the query to include LIMIT and OFFSET placeholders
 query_template = """
@@ -18,13 +18,13 @@ SELECT DISTINCT ?person ?personLabel ?date_of_birth ?date_of_death ?image WHERE 
   FILTER(YEAR(?date_of_death) > 2010)
   SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}
 }}
-LIMIT 5
+LIMIT 100
 OFFSET {}
 """
 
 
 def get_wikidata():
-    offset = 0
+    offset = 14800
     all_data = []
 
     while True:
@@ -32,7 +32,6 @@ def get_wikidata():
         query = query_template.format(offset)
 
         # Fetch results with retry mechanism
-        import pdb;pdb.set_trace() 
         results = get_results_with_retry(endpoint_url, query)
         if not results["results"]["bindings"]:
             break  # Exit loop if no more results
