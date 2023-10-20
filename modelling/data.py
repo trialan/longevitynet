@@ -1,5 +1,6 @@
 import glob
 import numpy as np
+import random
 import torch
 from torch.utils.data import DataLoader, random_split, Subset
 
@@ -7,9 +8,15 @@ from life_expectancy.modelling.model import FaceAgeDataset
 
 TEST_SET_RATIO = 0.2
 
-def get_dataloaders(ds_version, batch_size, seed):
+def get_dataloaders(ds_version, batch_size, seed, train_size_fraction=1.0):
     dataset = generate_dataset(ds_version)
+
     train_dataset, test_dataset = _get_train_test_split(dataset, seed)
+
+    num_samples = int(train_size_fraction * len(train_dataset))
+    indices = torch.randperm(len(train_dataset))[:num_samples]
+    train_dataset = Subset(train_dataset, indices)
+
     train_dataloader = DataLoader(train_dataset,
                                   batch_size=batch_size,
                                   shuffle=True)

@@ -33,7 +33,8 @@ def json_file_to_dataframe(file_path):
 
 
 if __name__ == '__main__': 
-    df = json_file_to_dataframe('/Users/thomasrialan/code/longevity_project/datasets/fourteen_thousand_rows.json')
+    df = json_file_to_dataframe('/Users/thomasrialan/Documents/code/longevity_project/datasets/fourteen_thousand_rows.json')
+    df = df.drop_duplicates(subset='person', keep='first')
     errors = []
 
     for i in tqdm.tqdm(range(len(df))):
@@ -45,6 +46,7 @@ if __name__ == '__main__':
             download_wiki_image(url, birth_year, death_year, person_name)
         except:
             errors.append(url)
-            print(len(errors))
+            print(f"Errors: {len(errors)}")
+            print(f"DLs: {i - len(errors)}")
 
 
