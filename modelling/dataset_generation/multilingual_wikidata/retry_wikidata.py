@@ -24,7 +24,7 @@ OFFSET {}
 
 
 def get_wikidata():
-    offset = 14800
+    offset = 41900
     all_data = []
 
     while True:

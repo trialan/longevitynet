@@ -40,7 +40,7 @@ def get_wikipedia_urls(batch_ids):
 files = sorted(os.listdir(input_directory), key=lambda x: int(x.split('_')[-1].split('.')[0]))
 
 # Process each CSV file in the input directory
-for i, filename in tqdm(enumerate(files[84:])):
+for i, filename in tqdm(enumerate(files[400:])):
     if filename.endswith(".csv"):
         # Read CSV
         file_path = os.path.join(input_directory, filename)

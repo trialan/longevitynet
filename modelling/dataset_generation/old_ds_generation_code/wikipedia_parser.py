@@ -22,6 +22,31 @@ def download_wiki_image(url, year_of_birth, year_of_death, person_name):
     data = response.text
     soup = BeautifulSoup(data, 'html.parser')
     table = soup.find('table', {'class': 'infobox'})
+    if table:
+        img = table.find('img')
+        assert img, "Could not find the image."
+        year_of_img = _get_year_of_image(img)
+    else:
+        # Handle cases without an infobox
+        img, caption = extract_image_and_caption_without_infobox(soup)
+        assert img and caption, "Could not find the image or caption."
+        year_of_img = _find_year(caption)
+    img_url = 'https:' + img.get('src').split(" ")[0]  # Get the first URL from the src attribute
+    response = requests.get(img_url, stream=True, headers=HEADER)
+    response.raise_for_status()
+    path = f'{FOLDER_PATH}/dataset_multilingual_v1/{person_name}_birth:{year_of_birth}_death:{year_of_death}_data:{year_of_img}.jpg'
+    assert int(year_of_img) <= int(year_of_death)
+    assert int(year_of_img) >= int(year_of_birth)
+    with open(path, 'wb') as out_file:
+        out_file.write(response.content)
+    return year_of_img
+
+def _old_download_wiki_image(url, year_of_birth, year_of_death, person_name):
+    response = requests.get(url, headers=HEADER)
+    assert response.status_code == 200
+    data = response.text
+    soup = BeautifulSoup(data, 'html.parser')
+    table = soup.find('table', {'class': 'infobox'})
     assert table, "Could not find the infobox."
     img = table.find('img')
     assert img, "Could not find the image."
@@ -29,12 +54,11 @@ def download_wiki_image(url, year_of_birth, year_of_death, person_name):
     img_url = 'https:' + img.get('src')
     response = requests.get(img_url, stream=True, headers=HEADER)
     response.raise_for_status()
-    path = f'{FOLDER_PATH}/datasets/dataset_v4/{person_name}_birth:{year_of_birth}_death:{year_of_death}_data:{year_of_img}.jpg'
+    path = f'{FOLDER_PATH}/dataset_multilingual_v1/{person_name}_birth:{year_of_birth}_death:{year_of_death}_data:{year_of_img}.jpg'
     assert year_of_img <= year_of_death
     assert year_of_img >= year_of_birth
     with open(path, 'wb') as out_file:
-        #out_file.write(response.content)
-        pass
+        out_file.write(response.content)
     return year_of_img
 
 
@@ -50,13 +74,33 @@ def _get_year_of_image(img):
     return year_of_img
 
 
-def _get_candidate_captions(img):
+def _old_get_candidate_captions(img):
     candidate_captions = [img.next_element.text, img.get('alt')]
     if img.find_next_sibling('div') is not None:
         candidate_captions = candidate_captions.append(img.find_next_sibling('div').text)
     return [c for c in candidate_captions if (c is not None)]
 
 
+
+def extract_image_and_caption_without_infobox(soup):
+    image = soup.find('img')
+    if not image:
+        return None, None
+    caption_element = image.find_next('figcaption')
+    caption = caption_element.text if caption_element else None
+    return image, caption
+
+
+def _get_candidate_captions(img):
+    candidate_captions = [img.get('alt')]
+    current_element = img.parent.parent
+    while current_element:
+        current_element = current_element.next_sibling
+        if current_element and hasattr(current_element, 'name') and current_element.name == 'div':
+            candidate_captions.append(current_element.text)
+            break  # We've found a potential caption, no need to continue further
+    
+    return [c for c in candidate_captions if c]
 
 def _get_year_of_birth_and_death(rows):
     for row in rows:
