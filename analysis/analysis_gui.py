@@ -52,13 +52,13 @@ class AnalysisGUI:
             predicted_age_text = self.font.render(f"Predicted Life Expectancy: {predicted_age:.2f} years", True, (255, 255, 255))
             self.screen.blit(true_life_expectancy_text, (10, self.height - 180))
             self.screen.blit(predicted_age_text, (10, self.height - 140))
-            
+
             # Extract name from the image path
             img_path = self.dataset.image_paths[self.index]
             person_name = os.path.basename(img_path).split('.')[0]
             person_name_text = self.font.render(f"Name: {person_name}", True, (255, 255, 255))
             self.screen.blit(person_name_text, (10, self.height - 100))
-            
+
             difference = predicted_age - true_life_expectancy.item()
             difference_text = self.font.render(f"Difference: {difference:.2f} years", True, (255, 255, 255))
             self.screen.blit(difference_text, (10, self.height - 60))
@@ -84,7 +84,8 @@ def convert_to_years(raw_prediction, dataset):
 if __name__ == '__main__':
     from life_expectancy.modelling.train import DS_VERSION
     import torch
+    model_dir = "/Users/thomasrialan/Documents/code/longevity_project/saved_model_binaries/"
     dataset = generate_dataset(DS_VERSION)
     model = ResNet50()
-    model.load_state_dict(torch.load("/Users/thomasrialan/Documents/code/longevity_project/saved_model_binaries/best_model_20231013-145803_0p01107617188245058.pth"))
+    model.load_state_dict(torch.load(model_dir + "best_model_20231013-145803_0p01107617188245058.pth"))
     app = AnalysisGUI(dataset, model)
