@@ -24,7 +24,7 @@ OFFSET {}
 
 
 def get_wikidata():
-    offset = 41900
+    offset = 47600
     all_data = []
 
     while True:
@@ -54,9 +54,9 @@ def get_wikidata():
 
 
 def get_results_with_retry(endpoint_url, query):
-    max_retries = 50
+    max_retries = 100
     retries = 0
-    wait_times = [1, 3]
+    wait_times = [1, 3, 4]
 
     while retries < max_retries:
         try:
