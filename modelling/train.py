@@ -1,37 +1,33 @@
 import tqdm
 import torch
 import matplotlib.pyplot as plt
+from pprint import pprint
 
+from life_expectancy.analysis.benchmarking import print_validation_stats_table
+from life_expectancy.modelling.config import CONFIG
+from life_expectancy.modelling.data import get_dataloaders, get_dataset
 from life_expectancy.modelling.model import ResNet50
-from life_expectancy.modelling.data import get_dataloaders
 from life_expectancy.modelling.utils import set_seed, save_model
 
-import warnings
-warnings.simplefilter("ignore")
+device = torch.device(CONFIG["MODEL_DEVICE"])
 
-device = torch.device("mps")
-N_EPOCHS = 3
-SEED = 7457769
-LR = 1e-3 / 3
-BATCH_SIZE = 128
-DS_VERSION = "v3"
+print("=========TRAINING CONFIG=========")
+pprint(CONFIG)
 
 
 if __name__ == '__main__':
-    set_seed(SEED)
-    F=0.35
-    print(F)
-    train_dataloader, test_dataloader = get_dataloaders(DS_VERSION,
-                                                        BATCH_SIZE,
-                                                        SEED,
-                                                        train_size_fraction=F)
+    set_seed(CONFIG["SEED"])
+    print(f"Training DS fraction: {CONFIG['TRAIN_SIZE_FRACTION']}")
+    dataset = get_dataset(CONFIG["DS_VERSION"])
+    train_dataloader, val_dataloader, test_dataloader = get_dataloaders(dataset,
+                                                                        CONFIG)
     model = ResNet50().to(device)
     criterion = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+    optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG["LR"])
     train_losses = []
-    test_losses = []
-    best_test_loss = float('inf')
-    for epoch in range(N_EPOCHS):
+    val_losses = []
+    best_val_loss = float('inf')
+    for epoch in range(CONFIG["N_EPOCHS"]):
         model.train()
         train_loss = 0
         for imgs, _, _, target in tqdm.tqdm(train_dataloader):
@@ -46,24 +42,21 @@ if __name__ == '__main__':
         train_losses.append(train_loss)
 
         model.eval()
-        test_loss = 0
-        with torch.no_grad():
-            for imgs, _, _, target in tqdm.tqdm(test_dataloader):
-                imgs = imgs.to(device)
-                target = target.to(device)
-                output = model(imgs)
-                loss = criterion(output, target)
-                test_loss += loss.item()
-        test_losses.append(test_loss)
+        benchmarks = True if epoch == 0 else False
+        val_loss = print_validation_stats_table(model,
+                                                val_dataloader,
+                                                dataset,
+                                                criterion,
+                                                benchmarks=benchmarks)
 
-        if test_loss < best_test_loss:
-            best_test_loss = test_loss
-            #save_model(model, test_loss/len(test_dataloader), epoch)
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            save_model(model, val_loss, epoch)
 
-        print(f"Epoch: {epoch+1}, Train Loss: {train_loss / len(train_dataloader)}, Test Loss: {test_loss / len(test_dataloader)}")
+        print(f"Epoch: {epoch+1}, Train Loss: {train_loss / len(train_dataloader)}, Val loss: {val_loss}")
 
     plt.plot(train_losses, 'r', label='train_loss')
-    plt.plot(test_losses, 'g', label='test_loss')
+    plt.plot(val_losses, 'g', label='val_loss')
     plt.savefig('loss.png')
 
 

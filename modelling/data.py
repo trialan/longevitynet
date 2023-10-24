@@ -6,27 +6,30 @@ from torch.utils.data import DataLoader, random_split, Subset
 
 from life_expectancy.modelling.model import FaceAgeDataset
 
-TEST_SET_RATIO = 0.2
+VAL_SET_RATIO = 0.2
+TEST_SET_RATIO = 0.05
 
-def get_dataloaders(ds_version, batch_size, seed, train_size_fraction=1.0):
-    dataset = generate_dataset(ds_version)
+def get_dataloaders(dataset, config):
+    train_dataset, val_dataset, test_dataset = _get_splits(dataset, config['SEED'])
 
-    train_dataset, test_dataset = _get_train_test_split(dataset, seed)
-
-    num_samples = int(train_size_fraction * len(train_dataset))
+    num_samples = int(config['TRAIN_SIZE_FRACTION'] * len(train_dataset))
     indices = torch.randperm(len(train_dataset))[:num_samples]
     train_dataset = Subset(train_dataset, indices)
 
     train_dataloader = DataLoader(train_dataset,
-                                  batch_size=batch_size,
+                                  batch_size=config['BATCH_SIZE'],
                                   shuffle=True)
-    test_dataloader = DataLoader(test_dataset,
-                                 batch_size=batch_size,
+    val_dataloader   = DataLoader(val_dataset,
+                                 batch_size=config['BATCH_SIZE'],
                                  shuffle=False)
-    return train_dataloader, test_dataloader
+    test_dataloader  = DataLoader(test_dataset,
+                                 batch_size=config['BATCH_SIZE'],
+                                 shuffle=False)
+
+    return train_dataloader, val_dataloader, test_dataloader
 
 
-def generate_dataset(ds_version):
+def get_dataset(ds_version):
     image_paths = np.array(glob.glob(f'life_expectancy/datasets/dataset_{ds_version}/*.jpg'))
     image_dates = np.array([int(p.split('data:')[-1][:-4]) for p in image_paths])
     death_dates = np.array([int(p.split('death:')[-1][:4]) for p in image_paths])
@@ -38,11 +41,12 @@ def generate_dataset(ds_version):
     return dataset
 
 
-def _get_train_test_split(dataset, seed):
+def _get_splits(dataset, seed):
     num_test = int(TEST_SET_RATIO * len(dataset))
-    num_train = len(dataset) - num_test
-    train_dataset, test_dataset = random_split(dataset, [num_train, num_test],
+    num_val = int(VAL_SET_RATIO * len(dataset))
+    num_train = len(dataset) - num_test - num_val
+    train_dataset, temp_dataset = random_split(dataset, [num_train, len(dataset) - num_train],
                                                generator=torch.Generator().manual_seed(seed))
-    return train_dataset, test_dataset
-
-
+    val_dataset, test_dataset = random_split(temp_dataset, [num_val, num_test],
+                                             generator=torch.Generator().manual_seed(seed))
+    return train_dataset, val_dataset, test_dataset

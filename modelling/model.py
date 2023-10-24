@@ -2,6 +2,7 @@ from efficientnet_pytorch import EfficientNet
 from torch import nn
 from torch.utils.data import Dataset
 from torchvision import models, transforms
+from torchvision.models.resnet import ResNet50_Weights
 import cv2
 import numpy as np
 import torch
@@ -23,7 +24,6 @@ class FaceAgeDataset(Dataset):
         self.ages = ages
         self.mean_life_expectancy = np.mean(life_expectancies)
         self.deltas = life_expectancies - self.mean_life_expectancy
-
         self.targets = min_max_scale(self.deltas)
         self.life_expectancies = life_expectancies
 
@@ -49,7 +49,7 @@ class ResNet(nn.Module):
 
     def _initialize_weights(self):
         self.cnn.fc = nn.Linear(self.cnn.fc.in_features, 500)
-        self.fc1 = nn.Linear(500, 250)  
+        self.fc1 = nn.Linear(500, 250)
         self.fc2 = nn.Linear(250, 1)
 
     def forward(self, img):
@@ -62,7 +62,8 @@ class ResNet(nn.Module):
 class ResNet50(ResNet):
     def __init__(self, pretrained=True):
         super(ResNet50, self).__init__(pretrained)
-        self.cnn = models.resnet50(pretrained=self.pretrained)
+        weights = ResNet50_Weights.IMAGENET1K_V1 if self.pretrained else None
+        self.cnn = models.resnet50(weights=weights)
         self._initialize_weights()
 
         for param in self.cnn.parameters():

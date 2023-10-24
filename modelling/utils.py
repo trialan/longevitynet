@@ -24,11 +24,11 @@ def set_seed(seed):
     random.seed(seed)
 
 
-def save_model(model, test_loss, epoch):
-    test_loss_str = str(test_loss).replace(".", "p")
+def save_model(model, val_loss, epoch):
+    val_loss_str = str(val_loss).replace(".", "p")
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     torch.save(model.state_dict(),
-               f"{CKPT_PATH}/best_model_{timestamp}_{test_loss_str}.pth")
-    print(f"New best model saved at epoch: {epoch+1} with Test Loss: {test_loss}")
+               f"{CKPT_PATH}/best_model_{timestamp}_{val_loss_str}.pth")
+    print(f"New best model saved at epoch: {epoch+1} with Test Loss: {val_loss}")
 
 
