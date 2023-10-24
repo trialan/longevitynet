@@ -37,7 +37,7 @@ def compute_batchwise_mse(predictions, val_dataloader, loss_criterion):
     for i, (_, _, _, batch_targets) in enumerate(val_dataloader):
         cumulative_loss += loss_criterion(
             torch.tensor(
-                predictions[i * BATCH_SIZE : (i + 1) * BATCH_SIZE], dtype=torch.float32
+                np.array(predictions[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]), dtype=torch.float32
             ).to(DEVICE),
             batch_targets.to(DEVICE),
         ).item()
@@ -48,7 +48,7 @@ def compute_batchwise_mae(predictions, val_dataloader):
     cumulative_error = 0.0
     for i, (_, _, _, batch_targets) in enumerate(val_dataloader):
         batch_predictions = torch.tensor(
-            predictions[i * BATCH_SIZE : (i + 1) * BATCH_SIZE], dtype=torch.float32
+            np.array(predictions[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]), dtype=torch.float32
         ).to(DEVICE)
         batch_error = (
             torch.abs(batch_predictions - batch_targets.to(DEVICE)).mean().item()
