@@ -127,9 +127,14 @@ def create_simple_results_table(model_loss, model_mae):
 
 def convert_mae_to_years(scaled_mae, dataset):
     unscaled_targets = dataset.deltas
-    max_data = max(unscaled_targets)
-    min_data = min(unscaled_targets)
-    return scaled_mae * (max_data - min_data)
+    if True:
+        print("Assuming Min-Max scaling of deltas")
+        max_data = max(unscaled_targets)
+        min_data = min(unscaled_targets)
+        return scaled_mae * (max_data - min_data)
+    if False:
+        print("Assuming whiten delta scaling")
+        return scaled_mae * np.std(unscaled_targets)
 
 
 def load_model(model_class, model_path, *args, **kwargs):
