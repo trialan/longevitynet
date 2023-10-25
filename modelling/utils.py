@@ -29,6 +29,6 @@ def save_model(model, val_loss, epoch):
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     torch.save(model.state_dict(),
                f"{CKPT_PATH}/best_model_{timestamp}_{val_loss_str}.pth")
-    print(f"New best model saved at epoch: {epoch+1} with Test Loss: {val_loss}")
+    print(f"New best model saved at epoch: {epoch+1} with Val Loss: {val_loss}")
 
 

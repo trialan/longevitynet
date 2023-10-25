@@ -14,8 +14,17 @@ preprocess = transforms.Compose([
     transforms.ToPILImage(),
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+
+"""
+- Can I ensemble models (new architecures).
+- Give it means / features -> tuning.
+- More data (HARD):
+    - do this to balance the dataset with younger people
+- Give a delta instead of an age? give both age and this delta.
+"""
 
 
 class FaceAgeDataset(Dataset):
@@ -34,7 +43,6 @@ class FaceAgeDataset(Dataset):
         img_path = self.image_paths[idx]
         img = cv2.imread(img_path)
         img = preprocess(img)
-
         age = self.ages[idx]
         target = self.targets[idx]
         life_expectancy = self.life_expectancies[idx]
@@ -49,11 +57,13 @@ class ResNet(nn.Module):
 
     def _initialize_weights(self):
         self.cnn.fc = nn.Linear(self.cnn.fc.in_features, 500)
-        self.fc1 = nn.Linear(500, 250)
+        self.fc1 = nn.Linear(501, 250)
         self.fc2 = nn.Linear(250, 1)
 
-    def forward(self, img):
+    def forward(self, img, age):
         x = self.cnn(img)
+        x = torch.flatten(x, 1)  # Flatten the CNN output
+        x = torch.cat((x, age), dim=1)  # Concatenate age
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
@@ -73,4 +83,107 @@ class ResNet50(ResNet):
             param.requires_grad = True
 
 
+class ModifiedVGG16(nn.Module):
+    def __init__(self):
+        super(ModifiedVGG16, self).__init__()
+        self.cnn = models.vgg16(pretrained=True).features
+        self.fc1 = nn.Linear(25088 + 1, 500)  # 25088 is the output size of VGG16's features
+        self.fc2 = nn.Linear(500, 250)
+        self.fc3 = nn.Linear(250, 1)
+
+    def forward(self, img, age):
+        x = self.cnn(img)
+        x = torch.flatten(x, 1)  # Flatten the CNN output
+        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+
+class ModifiedResNet101(nn.Module):
+    def __init__(self):
+        super(ModifiedResNet101, self).__init__()
+        self.cnn = models.resnet101(pretrained=True)
+
+        self.cnn.fc = nn.Linear(self.cnn.fc.in_features, 500)
+        self.fc1 = nn.Linear(501, 250)
+        self.fc2 = nn.Linear(250, 1)
+
+    def forward(self, img, age):
+        x = self.cnn(img)
+        x = torch.flatten(x, 1)  # Flatten the CNN output
+        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+
+class ModifiedEfficientNetPartialFreeze(nn.Module):
+    def __init__(self, version='b0', pretrained=True):
+        super(ModifiedEfficientNetPartialFreeze, self).__init__()
+
+        if pretrained:
+            self.cnn = EfficientNet.from_pretrained(f'efficientnet-{version}')
+        else:
+            self.cnn = EfficientNet.from_name(f'efficientnet-{version}')
+
+        # Freeze all the parameters
+        for param in self.cnn.parameters():
+            param.requires_grad = False
+
+        # Unfreeze the last convolutional layer
+        final_conv_layer = self.cnn._blocks[-1]._project_conv
+        for param in final_conv_layer.parameters():
+            param.requires_grad = True
+
+        effnet_out_features = self.cnn._fc.in_features
+        self.cnn._fc = nn.Linear(effnet_out_features, 500)
+        self.fc1 = nn.Linear(501, 250)
+        self.fc2 = nn.Linear(250, 1)
+
+    def forward(self, img, age):
+        x = self.cnn(img)
+        x = torch.flatten(x, 1)  # Flatten the CNN output
+        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+
+
+class ModifiedVGG16Freeze(nn.Module):
+    def __init__(self):
+        super(ModifiedVGG16Freeze, self).__init__()
+        self.cnn = models.vgg16(pretrained=True).features
+
+        for param in self.cnn.parameters():
+            param.requires_grad = False
+
+        for param in list(self.cnn.parameters())[-2:]:
+            param.requires_grad = True
+
+        self.fc1 = nn.Linear(25088 + 1, 500)  # 25088 is the output size of VGG16's features
+        self.fc2 = nn.Linear(500, 250)
+        self.fc3 = nn.Linear(250, 1)
+
+    def forward(self, img, age):
+        x = self.cnn(img)
+        x = torch.flatten(x, 1)  # Flatten the CNN output
+        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+
+class EnsembleModel(nn.Module):
+    def __init__(self, models):
+        super(EnsembleModel, self).__init__()
+        self.models = nn.ModuleList(models)
+
+    def forward(self, *args, **kwargs):
+        outputs = [model(*args, **kwargs) for model in self.models]
+        avg_output = sum(outputs) / len(outputs)
+        return avg_output
 
