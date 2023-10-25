@@ -7,7 +7,6 @@ import cv2
 import numpy as np
 import torch
 
-from life_expectancy.modelling.utils import min_max_scale
 
 
 preprocess = transforms.Compose([
@@ -18,22 +17,13 @@ preprocess = transforms.Compose([
     ])
 
 
-"""
-- Can I ensemble models (new architecures).
-- Give it means / features -> tuning.
-- More data (HARD):
-    - do this to balance the dataset with younger people
-- Give a delta instead of an age? give both age and this delta.
-"""
-
-
 class FaceAgeDataset(Dataset):
-    def __init__(self, image_paths, ages, life_expectancies):
+    def __init__(self, image_paths, ages, life_expectancies, scaling):
         self.image_paths = image_paths
         self.ages = ages
         self.mean_life_expectancy = np.mean(life_expectancies)
         self.deltas = life_expectancies - self.mean_life_expectancy
-        self.targets = min_max_scale(self.deltas)
+        self.targets = scaling(self.deltas)
         self.life_expectancies = life_expectancies
 
     def __len__(self):

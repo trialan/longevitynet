@@ -15,6 +15,10 @@ def undo_min_max_scaling(x, min_val, max_val):
     return x * (max_val - min_val) + min_val
 
 
+def whiten(x):
+    return (x - np.mean(x)) / np.std(x)
+
+
 def set_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)

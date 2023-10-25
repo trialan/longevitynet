@@ -11,8 +11,6 @@ from life_expectancy.modelling.utils import set_seed, save_model
 device = torch.device(CONFIG["MODEL_DEVICE"])
 
 
-GRADIENT_ACCUMULATION_STEPS = 4  # Adjust this value based on your needs
-
 if __name__ == "__main__":
     set_seed(CONFIG["SEED"])
     dataset = get_dataset(CONFIG)
@@ -43,12 +41,11 @@ if __name__ == "__main__":
             loss.backward()
 
             # Check if it's time to update the parameters
-            if (idx + 1) % GRADIENT_ACCUMULATION_STEPS == 0:
+            if (idx + 1) % CONFIG["GRADIENT_ACC_STEPS"] == 0:
                 optimizer.step()
                 optimizer.zero_grad()
 
-        # Handle the case where the number of batches is not a multiple of GRADIENT_ACCUMULATION_STEPS
-        if len(train_dataloader) % GRADIENT_ACCUMULATION_STEPS != 0:
+        if len(train_dataloader) % CONFIG["GRADIENT_ACC_STEPS"] != 0:
             optimizer.step()
             optimizer.zero_grad()
 

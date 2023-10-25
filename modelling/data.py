@@ -29,7 +29,11 @@ def get_dataloaders(dataset, config):
     return train_dataloader, val_dataloader, test_dataloader
 
 
-def get_dataset(ds_version):
+def get_dataset(config):
+    ds_version = config["DS_VERSION"]
+    scaling = config["TARGET_SCALER"]
+
+
     image_paths = np.array(glob.glob(f'life_expectancy/datasets/dataset_{ds_version}/*.jpg'))
     image_dates = np.array([int(p.split('data:')[-1][:-4]) for p in image_paths])
     death_dates = np.array([int(p.split('death:')[-1][:4]) for p in image_paths])
@@ -37,7 +41,7 @@ def get_dataset(ds_version):
     ages = np.array([img_date - birth_date for img_date, birth_date in zip(image_dates, birth_dates)])
     life_expectancies = np.array([death - date for death, date in zip(death_dates, image_dates)])
     good_ixs = np.where(life_expectancies > 0)[0]
-    dataset = FaceAgeDataset(image_paths[good_ixs], ages[good_ixs], life_expectancies[good_ixs])
+    dataset = FaceAgeDataset(image_paths[good_ixs], ages[good_ixs], life_expectancies[good_ixs], scaling)
     return dataset
 
 
