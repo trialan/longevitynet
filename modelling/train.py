@@ -7,8 +7,8 @@ from pprint import pprint
 from life_expectancy.analysis.benchmarking import print_validation_stats_table
 from life_expectancy.modelling.config import CONFIG
 from life_expectancy.modelling.data import get_dataloaders, get_dataset
-from life_expectancy.modelling.model import ResNet50, ModifiedEfficientNetPartialFreeze
-from life_expectancy.modelling.utils import set_seed, save_model, plot_losses
+from life_expectancy.modelling.model import ResNet50
+from life_expectancy.modelling.utils import set_seed, save_model
 
 device = torch.device(CONFIG["MODEL_DEVICE"])
 
@@ -45,14 +45,15 @@ if __name__ == "__main__":
             optimizer.step()
             optimizer.zero_grad()
 
-        train_losses.append(train_loss)
 
         model.eval()
         benchmarks = False  # True if epoch == 0 else False
         val_loss = print_validation_stats_table(
             model, val_dataloader, dataset, criterion, benchmarks=benchmarks
         )
+
         val_losses.append(val_loss)
+        train_losses.append(train_loss)
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
