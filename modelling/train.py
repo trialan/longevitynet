@@ -4,9 +4,9 @@ import torch
 import matplotlib.pyplot as plt
 from pprint import pprint
 
-from life_expectancy.analysis.benchmarking import print_validation_stats_table
+from life_expectancy.analysis.eval import print_validation_stats_table
 from life_expectancy.modelling.config import CONFIG
-from life_expectancy.modelling.data import get_dataloaders, get_dataset
+from life_expectancy.modelling.data import get_dataset_dict
 from life_expectancy.modelling.model import ResNet50
 from life_expectancy.modelling.utils import set_seed, save_model
 
@@ -15,13 +15,13 @@ device = torch.device(CONFIG["MODEL_DEVICE"])
 
 if __name__ == "__main__":
     set_seed(CONFIG["SEED"])
-    dataset = get_dataset(CONFIG)
-    train_dataloader, val_dataloader, test_dataloader = get_dataloaders(dataset, CONFIG)
+
+    dataset_dict = get_dataset_dict(CONFIG)
+    train_dataloader = dataset_dict['dataloaders']['train']
 
     model = ResNet50().to(device)
     criterion = CONFIG["loss_criterion"]
-    optimizer = torch.optim.Adam(
-        model.parameters(), lr=CONFIG["LR"])
+    optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG["LR"])
 
     train_losses = []
     val_losses = []
@@ -45,11 +45,11 @@ if __name__ == "__main__":
             optimizer.step()
             optimizer.zero_grad()
 
-
         model.eval()
-        benchmarks = False  # True if epoch == 0 else False
         val_loss = print_validation_stats_table(
-            model, val_dataloader, dataset, criterion, benchmarks=benchmarks
+            model,
+            dataset_dict,
+            criterion,
         )
 
         val_losses.append(val_loss)

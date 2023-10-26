@@ -71,3 +71,5 @@ class ResNet50(ResNet):
 
         for param in self.cnn.layer4.parameters():
             param.requires_grad = True
+
+
