@@ -21,9 +21,7 @@ if __name__ == "__main__":
     model = ResNet50().to(device)
     criterion = CONFIG["loss_criterion"]
     optimizer = torch.optim.Adam(
-        model.parameters(), lr=CONFIG["LR"],
-        betas=CONFIG["BETAS"]  )
-    scheduler = StepLR(optimizer, step_size=CONFIG["LR_DECAY_STEP"], gamma=CONFIG["LR_DECAY_FACTOR"])
+        model.parameters(), lr=CONFIG["LR"])
 
     train_losses = []
     val_losses = []
@@ -44,14 +42,6 @@ if __name__ == "__main__":
 
             loss.backward()
 
-            # Check if it's time to update the parameters
-            if (idx + 1) % CONFIG["GRADIENT_ACC_STEPS"] == 0:
-                torch.nn.utils.clip_grad_norm_(model.parameters(), CONFIG["MAX_NORM"])
-                optimizer.step()
-                optimizer.zero_grad()
-
-        if len(train_dataloader) % CONFIG["GRADIENT_ACC_STEPS"] != 0:
-            torch.nn.utils.clip_grad_norm_(model.parameters(), CONFIG["MAX_NORM"])
             optimizer.step()
             optimizer.zero_grad()
 
@@ -63,7 +53,6 @@ if __name__ == "__main__":
             model, val_dataloader, dataset, criterion, benchmarks=benchmarks
         )
         val_losses.append(val_loss)
-        plot_losses(train_loss, val_loss, epoch)
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -72,4 +61,3 @@ if __name__ == "__main__":
         print(
             f"Epoch: {epoch+1}, Train Loss: {train_loss / len(train_dataloader)}, Val loss: {val_loss}"
         )
-        scheduler.step()
