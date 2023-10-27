@@ -6,7 +6,6 @@ import torch
 
 from life_expectancy.modelling.config import CONFIG
 
-BATCH_SIZE = CONFIG["BATCH_SIZE"]
 DEVICE = CONFIG["MODEL_DEVICE"]
 
 
@@ -32,8 +31,8 @@ def get_model_stats(model, dataset_dict):
 
 def compute_batchwise_loss(predictions, val_dataloader):
     cumulative_loss = 0.0
-    for i, (_, _, _, batch_targets) in enumerate(val_dataloader):
-        _input = np.array(predictions[i * BATCH_SIZE : (i + 1) * BATCH_SIZE])
+    for i, (_, _, batch_targets) in enumerate(val_dataloader):
+        _input = np.array(predictions[i * CONFIG["BATCH_SIZE"] : (i + 1) * CONFIG["BATCH_SIZE"]])
 
         torch_input = torch.tensor(_input, dtype=torch.float32).to(DEVICE)
         cumulative_loss += CONFIG["loss_criterion"](torch_input, batch_targets.to(DEVICE)).item()
@@ -42,9 +41,9 @@ def compute_batchwise_loss(predictions, val_dataloader):
 
 def compute_batchwise_mae(predictions, val_dataloader):
     cumulative_error = 0.0
-    for i, (_, _, _, batch_targets) in enumerate(val_dataloader):
+    for i, (_, _, batch_targets) in enumerate(val_dataloader):
         batch_predictions = torch.tensor(
-            np.array(predictions[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]),
+            np.array(predictions[i * CONFIG["BATCH_SIZE"] : (i + 1) * CONFIG["BATCH_SIZE"]]),
             dtype=torch.float32,
         ).to(DEVICE)
         batch_error = (
@@ -57,7 +56,7 @@ def compute_batchwise_mae(predictions, val_dataloader):
 def compute_predictions(model, dataloader):
     predictions = []
     with torch.no_grad():
-        for imgs, ages, _, _ in tqdm(dataloader, desc="Computing preds"):
+        for imgs, ages, _ in tqdm(dataloader, desc="Computing preds"):
             imgs = imgs.to(DEVICE)
             ages = ages.to(DEVICE)
             output = model(imgs, ages)
@@ -67,7 +66,7 @@ def compute_predictions(model, dataloader):
 
 def get_mean_guess_stats(dataset_dict):
     print("Computing mean guess stats")
-    train_targets = [row[3].item() for row in dataset_dict['datasets']['train']]
+    train_targets = [row[2].item() for row in dataset_dict['datasets']['train']]
     train_mean_life_expect = np.mean(train_targets)
     # Mean guess is mean of the train set for zero leakage.
     mean_guesses = [np.array([train_mean_life_expect], dtype=np.float32)] * len(dataset_dict['dataloaders']['validation'].dataset)

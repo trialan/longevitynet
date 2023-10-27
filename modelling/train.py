@@ -19,7 +19,6 @@ if __name__ == "__main__":
     dataset_dict = get_dataset_dict(CONFIG)
     train_dataloader = dataset_dict['dataloaders']['train']
 
-    import pdb;pdb.set_trace() 
     model = ResNet50().to(device)
     criterion = CONFIG["loss_criterion"]
     optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG["LR"])
