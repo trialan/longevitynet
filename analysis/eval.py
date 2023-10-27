@@ -11,8 +11,8 @@ DEVICE = CONFIG["MODEL_DEVICE"]
 
 def print_validation_stats_table(model, dataset_dict, benchmarks=True):
     stats = get_model_stats(model, dataset_dict)
-    mean_stats = get_mean_guess_stats(dataset_dict)
-    table = create_simple_results_table([stats, mean_stats])
+    #mean_stats = get_mean_guess_stats(dataset_dict)
+    table = create_simple_results_table([stats])
     print(table)
     return stats["loss"]
 

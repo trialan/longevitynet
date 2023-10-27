@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            save_model(model, val_loss, epoch)
+            #save_model(model, val_loss, epoch)
 
         print(
             f"Epoch: {epoch+1}, Train Loss: {train_loss / len(train_dataloader)}, Val loss: {val_loss}"
