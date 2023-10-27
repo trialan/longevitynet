@@ -1,7 +1,7 @@
 from torch import nn
 from torch.utils.data import Dataset
 from torchvision import models, transforms
-from torchvision.models.resnet import ResNet50_Weights
+from torchvision.models.resnet import ResNet50_Weights, VGG16_Weights
 import cv2
 import numpy as np
 import torch
@@ -93,7 +93,7 @@ class VGG(nn.Module):
 class VGG16(VGG):
     def __init__(self, pretrained=True):
         super(VGG16, self).__init__(pretrained)
-        self.cnn = models.vgg16(pretrained=self.pretrained)
+        self.cnn = models.vgg16(weights=VGG16_Weights.IMAGENET1K_V1)
         self._initialize_weights()
 
         for param in self.cnn.features.parameters():
