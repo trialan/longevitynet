@@ -122,10 +122,6 @@ class EfficientNetCustom(nn.Module):
         for param in self.cnn._blocks.parameters():
             param.requires_grad = False
         
-        # Unfreeze the last block
-        for param in self.cnn._blocks[-1].parameters():
-            param.requires_grad = True
-
     def forward(self, img, age):
         x = self.cnn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
