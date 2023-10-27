@@ -7,7 +7,7 @@ from pprint import pprint
 from life_expectancy.analysis.eval import print_validation_stats_table
 from life_expectancy.modelling.config import CONFIG
 from life_expectancy.modelling.data import get_dataset_dict
-from life_expectancy.modelling.model import ResNet50
+from life_expectancy.modelling.model import ResNet50, VGG16
 from life_expectancy.modelling.utils import set_seed, save_model
 
 device = torch.device(CONFIG["MODEL_DEVICE"])

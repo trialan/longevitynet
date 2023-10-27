@@ -73,3 +73,32 @@ class ResNet50(ResNet):
             param.requires_grad = True
 
 
+class VGG(nn.Module):
+    def __init__(self, pretrained=True):
+        super(VGG, self).__init__()
+        self.pretrained = pretrained
+
+    def _initialize_weights(self):
+        self.cnn.classifier[6] = nn.Linear(self.cnn.classifier[6].in_features, 500)
+        self.fc1 = nn.Linear(501, 250)
+        self.fc2 = nn.Linear(250, 1)
+
+    def forward(self, img, age):
+        x = self.cnn(img)
+        x = torch.flatten(x, 1)  # Flatten the CNN output
+        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+class VGG16(VGG):
+    def __init__(self, pretrained=True):
+        super(VGG16, self).__init__(pretrained)
+        self.cnn = models.vgg16(pretrained=self.pretrained)
+        self._initialize_weights()
+
+        for param in self.cnn.features.parameters():
+            param.requires_grad = False
+
+        for param in self.cnn.features[-4:].parameters():
+            param.requires_grad = True
