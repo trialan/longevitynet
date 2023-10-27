@@ -20,7 +20,7 @@ CONFIG = {"N_EPOCHS" : 25,
           "DATA_FRACTION": 1.,
           "loss_criterion": torch.nn.L1Loss(),
           "TARGET_SCALER": whiten,
-          "MODEL_CLASS": VGG16}
+          "MODEL_CLASS": EfficientNetCustom}
 
 
 print("=========TRAINING CONFIG=========")
