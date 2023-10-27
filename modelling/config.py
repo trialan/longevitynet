@@ -1,8 +1,13 @@
+import os
 import torch
 from pprint import pprint
 from life_expectancy.modelling.utils import min_max_scale, whiten
 
-REPO_DIR = "/Users/thomasrialan/Documents/code/longevity_project/life_expectancy"
+
+if "paperspace" in os.getcwd():
+    REPO_DIR = "/home/paperspace/life_expectancy"
+else:
+    REPO_DIR = "/Users/thomasrialan/Documents/code/longevity_project/life_expectancy"
 
 CONFIG = {"N_EPOCHS" : 25,
           "SEED" : 7457769,
