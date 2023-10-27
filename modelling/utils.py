@@ -1,11 +1,13 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import random
 from datetime import datetime
 
+from life_expectancy import get_repo_dir
 
-DIR_PATH = "/Users/thomasrialan/Documents/code/longevity_project"
+DIR_PATH = get_repo_dir()
 CKPT_PATH = DIR_PATH + "/saved_model_binaries"
 
 
