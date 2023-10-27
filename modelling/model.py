@@ -1,4 +1,4 @@
-from torch import nn
+
 import timm
 from torch.utils.data import Dataset
 from torchvision import models, transforms
@@ -119,9 +119,11 @@ class EfficientNetCustom(nn.Module):
         self.fc2 = nn.Linear(250, 1)
 
     def _freeze_layers(self):
-        # Freeze all layers in _blocks
-        for param in self.cnn._blocks.parameters():
-            param.requires_grad = False
+        # Freeze all layers in _blocks except the last one
+        for i, block in enumerate(self.cnn._blocks):
+            if i < len(self.cnn._blocks) - 1:
+                for param in block.parameters():
+                    param.requires_grad = False
 
     def forward(self, img, age):
         x = self.cnn(img)
