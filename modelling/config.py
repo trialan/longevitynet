@@ -19,7 +19,7 @@ CONFIG = {"N_EPOCHS" : 25,
           "MODEL_DEVICE": "cuda" if torch.cuda.is_available() else "mps",
           "DATA_FRACTION": 1.,
           "loss_criterion": torch.nn.L1Loss(),
-          "TARGET_SCALER": whiten,
+          "TARGET_SCALER": min_max_scale,
           "MODEL_CLASS": EfficientNetCustom}
 
 
