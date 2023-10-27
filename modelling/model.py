@@ -1,7 +1,8 @@
 from torch import nn
 from torch.utils.data import Dataset
 from torchvision import models, transforms
-from torchvision.models.resnet import ResNet50_Weights, VGG16_Weights
+from torchvision.models.resnet import ResNet50_Weights
+from torchvision.models.vgg import VGG16_Weights
 import cv2
 import numpy as np
 import torch
