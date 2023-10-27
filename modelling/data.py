@@ -49,8 +49,8 @@ def get_val_test_datasets(config):
                                               scaling)
     val_dataset = _create_dataset_from_paths(image_paths[num_test:num_test+num_val],
                                              scaling)
-    print(f"Validation Dataset: {len(val_ds)}")
-    print(f"Test Dataset: {len(test_ds)}")
+    print(f"Validation Dataset: {len(val_dataset)}")
+    print(f"Test Dataset: {len(test_dataset)}")
     return val_dataset, test_dataset
 
 
