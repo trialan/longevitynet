@@ -29,12 +29,14 @@ def get_dataset_dict(config):
     return dataset_dict
 
 
+
 def get_train_dataset(config):
     scaling = config["TARGET_SCALER"]
-    import pdb;pdb.set_trace() 
     image_paths = get_train_image_paths(config["DS_VERSION"])
     N_IMAGES = int(len(image_paths) * config["DATA_FRACTION"])
-    return _create_dataset_from_paths(image_paths[:N_IMAGES], scaling)
+    train_ds = _create_dataset_from_paths(image_paths[:N_IMAGES], scaling)
+    print(f"Train Dataset: {len(train_ds)}")
+    return train_ds
 
 
 def get_val_test_datasets(config):
@@ -47,6 +49,8 @@ def get_val_test_datasets(config):
                                               scaling)
     val_dataset = _create_dataset_from_paths(image_paths[num_test:num_test+num_val],
                                              scaling)
+    print(f"Validation Dataset: {len(val_ds)}")
+    print(f"Test Dataset: {len(test_ds)}")
     return val_dataset, test_dataset
 
 
