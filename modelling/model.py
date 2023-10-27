@@ -110,11 +110,21 @@ class EfficientNetCustom(nn.Module):
         super(EfficientNetCustom, self).__init__()
         self.cnn = EfficientNet.from_pretrained(model_name) if pretrained else EfficientNet.from_name(model_name)
         self._initialize_weights()
+        self._freeze_layers()
 
     def _initialize_weights(self):
         self.cnn._fc = nn.Linear(self.cnn._fc.in_features, 500)
         self.fc1 = nn.Linear(501, 250)
         self.fc2 = nn.Linear(250, 1)
+
+    def _freeze_layers(self):
+        # Freeze all layers in _blocks
+        for param in self.cnn._blocks.parameters():
+            param.requires_grad = False
+        
+        # Unfreeze the last block
+        for param in self.cnn._blocks[-1].parameters():
+            param.requires_grad = True
 
     def forward(self, img, age):
         x = self.cnn(img)
