@@ -3,10 +3,10 @@ from torch.utils.data import Dataset
 from torchvision import models, transforms
 from torchvision.models.resnet import ResNet50_Weights
 from torchvision.models.vgg import VGG16_Weights
+from efficientnet_pytorch import EfficientNet
 import cv2
 import numpy as np
 import torch
-
 
 
 preprocess = transforms.Compose([
@@ -91,6 +91,7 @@ class VGG(nn.Module):
         x = self.fc2(x)
         return x
 
+
 class VGG16(VGG):
     def __init__(self, pretrained=True):
         super(VGG16, self).__init__(pretrained)
@@ -102,3 +103,23 @@ class VGG16(VGG):
 
         for param in self.cnn.features[-4:].parameters():
             param.requires_grad = True
+
+
+class EfficientNetCustom(nn.Module):
+    def __init__(self, model_name='efficientnet-b0', pretrained=True):
+        super(EfficientNetCustom, self).__init__()
+        self.cnn = EfficientNet.from_pretrained(model_name) if pretrained else EfficientNet.from_name(model_name)
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        self.cnn._fc = nn.Linear(self.cnn._fc.in_features, 500)
+        self.fc1 = nn.Linear(501, 250)
+        self.fc2 = nn.Linear(250, 1)
+
+    def forward(self, img, age):
+        x = self.cnn(img)
+        x = torch.flatten(x, 1)  # Flatten the CNN output
+        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
