@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 import torch
 
-from life_expectancy.modelling.config import CONFIG
 
 
 preprocess = transforms.Compose([
