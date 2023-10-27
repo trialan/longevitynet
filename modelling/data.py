@@ -89,11 +89,12 @@ def _create_dataset_from_paths(image_paths, scaling):
     birth_dates = [d['birth'] for d in image_data]
     ages = [d['age'] for d in image_data]
     life_expectancies = [d['life_expectancy'] for d in image_data]
+    assert_life_expectancy_positive(life_expectancies)
     return FaceAgeDataset(image_paths, ages, life_expectancies, scaling)
 
 
 def assert_life_expectancy_positive(life_expectancies):
-    bad_ixs = np.where(life_expectancies < 0)[0]
+    bad_ixs = np.where(np.array(life_expectancies) < 0)[0]
     assert sum(bad_ixs) == 0
 
 

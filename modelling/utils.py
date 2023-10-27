@@ -38,14 +38,3 @@ def save_model(model, val_loss, epoch):
     print(f"New best model saved at epoch: {epoch+1} with Val Loss: {val_loss}")
 
 
-def plot_losses(train_losses, val_losses, epoch):
-    plt.figure(figsize=(10, 6))
-    plt.plot(train_losses, label='Train Loss')
-    plt.plot(val_losses, label='Validation Loss')
-    plt.title(f'Epoch: {epoch}')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.legend()
-    plt.grid(True)
-    plt.savefig(f'{DIR_PATH}/plots/loss_plot_epoch_{epoch}.png')
-    plt.close()

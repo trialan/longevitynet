@@ -37,7 +37,7 @@ class FaceAgeDataset(Dataset):
         target = self.targets[idx]
         life_expectancy = self.life_expectancies[idx]
 
-        return img, torch.tensor([age]).float(), torch.tensor([life_expectancy]).float(), torch.tensor([target]).float()
+        return img, torch.tensor([age]).float(), torch.tensor([target]).float()
 
 
 class ResNet(nn.Module):
