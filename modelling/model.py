@@ -1,4 +1,5 @@
 from torch import nn
+import timm
 from torch.utils.data import Dataset
 from torchvision import models, transforms
 from torchvision.models.resnet import ResNet50_Weights
@@ -121,7 +122,29 @@ class EfficientNetCustom(nn.Module):
         # Freeze all layers in _blocks
         for param in self.cnn._blocks.parameters():
             param.requires_grad = False
-        
+
+    def forward(self, img, age):
+        x = self.cnn(img)
+        x = torch.flatten(x, 1)  # Flatten the CNN output
+        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+
+
+
+class ViTCustom(nn.Module):
+    def __init__(self, model_name='vit_base_patch16_224', pretrained=True):
+        super(ViTCustom, self).__init__()
+        self.cnn = timm.create_model(model_name, pretrained=pretrained)
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        self.cnn.head = nn.Linear(self.cnn.head.in_features, 500)
+        self.fc1 = nn.Linear(501, 250)
+        self.fc2 = nn.Linear(250, 1)
+
     def forward(self, img, age):
         x = self.cnn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
