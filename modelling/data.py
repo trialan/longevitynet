@@ -9,7 +9,6 @@ from life_expectancy.modelling.config import REPO_DIR
 
 
 def get_dataset_dict(config):
-    import pdb;pdb.set_trace() 
     train_dataset = get_train_dataset(config)
     val_dataset, test_dataset = get_val_test_datasets(config)
     train_dataloader = DataLoader(train_dataset,
@@ -32,6 +31,7 @@ def get_dataset_dict(config):
 
 def get_train_dataset(config):
     scaling = config["TARGET_SCALER"]
+    import pdb;pdb.set_trace() 
     image_paths = get_train_image_paths(config["DS_VERSION"])
     N_IMAGES = int(len(image_paths) * config["DATA_FRACTION"])
     return _create_dataset_from_paths(image_paths[:N_IMAGES], scaling)
