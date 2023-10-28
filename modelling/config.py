@@ -20,7 +20,7 @@ CONFIG = {"N_EPOCHS" : 25,
           "DATA_FRACTION": 1.,
           "loss_criterion": torch.nn.L1Loss(),
           "TARGET_SCALER": whiten,
-          "MODEL_CLASS": ViTCustom,
+          "MODEL_CLASS": ResNet50,
           "WEIGHT_DECAY": 5*10e-4}
 
 
