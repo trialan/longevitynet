@@ -46,12 +46,12 @@ class ResNet(torch.nn.Module):
         self.pretrained = pretrained
 
     def _initialize_weights(self):
-        self.ctorch.nn.fc = torch.nn.Linear(self.ctorch.nn.fc.in_features, 500)
+        self.torch.nn.fc = torch.nn.Linear(self.torch.nn.fc.in_features, 500)
         self.fc1 = torch.nn.Linear(501, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
     def forward(self, img, age):
-        x = self.ctorch.nn(img)
+        x = self.torch.nn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
         x = torch.cat((x, age), dim=1)  # Concatenate age
         x = torch.relu(self.fc1(x))
@@ -63,13 +63,13 @@ class ResNet50(ResNet):
     def __init__(self, pretrained=True):
         super(ResNet50, self).__init__(pretrained)
         weights = ResNet50_Weights.IMAGENET1K_V1 if self.pretrained else None
-        self.ctorch.nn = models.resnet50(weights=weights)
+        self.torch.nn = models.resnet50(weights=weights)
         self._initialize_weights()
 
-        for param in self.ctorch.nn.parameters():
+        for param in self.torch.nn.parameters():
             param.requires_grad = False
 
-        for param in self.ctorch.nn.layer4.parameters():
+        for param in self.torch.nn.layer4.parameters():
             param.requires_grad = True
 
 
@@ -79,12 +79,12 @@ class VGG(torch.nn.Module):
         self.pretrained = pretrained
 
     def _initialize_weights(self):
-        self.ctorch.nn.classifier[6] = torch.nn.Linear(self.ctorch.nn.classifier[6].in_features, 500)
+        self.torch.nn.classifier[6] = torch.nn.Linear(self.torch.nn.classifier[6].in_features, 500)
         self.fc1 = torch.nn.Linear(501, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
     def forward(self, img, age):
-        x = self.ctorch.nn(img)
+        x = self.torch.nn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
         x = torch.cat((x, age), dim=1)  # Concatenate age
         x = torch.relu(self.fc1(x))
@@ -95,37 +95,37 @@ class VGG(torch.nn.Module):
 class VGG16(VGG):
     def __init__(self, pretrained=True):
         super(VGG16, self).__init__(pretrained)
-        self.ctorch.nn = models.vgg16(weights=VGG16_Weights.IMAGENET1K_V1)
+        self.torch.nn = models.vgg16(weights=VGG16_Weights.IMAGENET1K_V1)
         self._initialize_weights()
 
-        for param in self.ctorch.nn.features.parameters():
+        for param in self.torch.nn.features.parameters():
             param.requires_grad = False
 
-        for param in self.ctorch.nn.features[-4:].parameters():
+        for param in self.torch.nn.features[-4:].parameters():
             param.requires_grad = True
 
 
 class EfficientNetCustom(torch.nn.Module):
     def __init__(self, model_name='efficientnet-b0', pretrained=True):
         super(EfficientNetCustom, self).__init__()
-        self.ctorch.nn = EfficientNet.from_pretrained(model_name) if pretrained else EfficientNet.from_name(model_name)
+        self.torch.nn = EfficientNet.from_pretrained(model_name) if pretrained else EfficientNet.from_name(model_name)
         self._initialize_weights()
         self._freeze_layers()
 
     def _initialize_weights(self):
-        self.ctorch.nn._fc = torch.nn.Linear(self.ctorch.nn._fc.in_features, 500)
+        self.torch.nn._fc = torch.nn.Linear(self.torch.nn._fc.in_features, 500)
         self.fc1 = torch.nn.Linear(501, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
     def _freeze_layers(self):
         # Freeze all layers in _blocks except the last one
-        for i, block in enumerate(self.ctorch.nn._blocks):
-            if i < len(self.ctorch.nn._blocks) - 1:
+        for i, block in enumerate(self.torch.nn._blocks):
+            if i < len(self.torch.nn._blocks) - 1:
                 for param in block.parameters():
                     param.requires_grad = False
 
     def forward(self, img, age):
-        x = self.ctorch.nn(img)
+        x = self.torch.nn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
         x = torch.cat((x, age), dim=1)  # Concatenate age
         x = torch.relu(self.fc1(x))
@@ -138,16 +138,16 @@ class EfficientNetCustom(torch.nn.Module):
 class ViTCustom(torch.nn.Module):
     def __init__(self, model_name='vit_base_patch16_224', pretrained=True):
         super(ViTCustom, self).__init__()
-        self.ctorch.nn = timm.create_model(model_name, pretrained=pretrained)
+        self.torch.nn = timm.create_model(model_name, pretrained=pretrained)
         self._initialize_weights()
 
     def _initialize_weights(self):
-        self.ctorch.nn.head = torch.nn.Linear(self.ctorch.nn.head.in_features, 500)
+        self.torch.nn.head = torch.nn.Linear(self.torch.nn.head.in_features, 500)
         self.fc1 = torch.nn.Linear(501, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
     def forward(self, img, age):
-        x = self.ctorch.nn(img)
+        x = self.torch.nn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
         x = torch.cat((x, age), dim=1)  # Concatenate age
         x = torch.relu(self.fc1(x))
