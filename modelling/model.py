@@ -49,12 +49,18 @@ class ResNet(torch.nn.Module):
         self.cnn.fc = torch.nn.Linear(self.cnn.fc.in_features, 500)
         self.fc1 = torch.nn.Linear(501, 250)
         self.fc2 = torch.nn.Linear(250, 1)
+        dropout_prob = 0.5
+        print(f"DROPOUT: {dropout_prob}")
+        self.dropout_after_cnn = torch.nn.Dropout(dropout_prob)
+        self.dropout_after_relu = torch.nn.Dropout(dropout_prob)
 
     def forward(self, img, age):
         x = self.cnn(img)
+        x = dropout_after_cnn(x)
         x = torch.flatten(x, 1)  # Flatten the CNN output
         x = torch.cat((x, age), dim=1)  # Concatenate age
         x = torch.relu(self.fc1(x))
+        x = self.dropout_after_relu(x)
         x = self.fc2(x)
         return x
 
