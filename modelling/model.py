@@ -56,7 +56,7 @@ class ResNet(torch.nn.Module):
 
     def forward(self, img, age):
         x = self.cnn(img)
-        x = dropout_after_cnn(x)
+        x = self.dropout_after_cnn(x)
         x = torch.flatten(x, 1)  # Flatten the CNN output
         x = torch.cat((x, age), dim=1)  # Concatenate age
         x = torch.relu(self.fc1(x))
