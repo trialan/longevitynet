@@ -133,13 +133,16 @@ class EfficientNetCustom(torch.nn.Module):
         return x
 
 
-
-
 class ViTCustom(torch.nn.Module):
-    def __init__(self, model_name='vit_base_patch16_224', pretrained=True):
+    def __init__(self, model_name='vit_base_patch16_224', pretrained=True, dropout_prob=0.5):
         super(ViTCustom, self).__init__()
+        print(f"======{dropout_prob} DROPOUT=======")
         self.cnn = timm.create_model(model_name, pretrained=pretrained)
         self._initialize_weights()
+
+        # Define dropout layers
+        self.dropout_after_cnn = torch.nn.Dropout(dropout_prob)
+        self.dropout_after_relu = torch.nn.Dropout(dropout_prob)
 
     def _initialize_weights(self):
         self.cnn.head = torch.nn.Linear(self.cnn.head.in_features, 500)
@@ -148,8 +151,12 @@ class ViTCustom(torch.nn.Module):
 
     def forward(self, img, age):
         x = self.cnn(img)
+        x = self.dropout_after_cnn(x)  # Dropout after CNN
         x = torch.flatten(x, 1)  # Flatten the CNN output
         x = torch.cat((x, age), dim=1)  # Concatenate age
         x = torch.relu(self.fc1(x))
+        x = self.dropout_after_relu(x)  # Dropout after ReLU
         x = self.fc2(x)
         return x
+
+
