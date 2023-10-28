@@ -18,9 +18,10 @@ CONFIG = {"N_EPOCHS" : 25,
           "DS_VERSION" : "v4",
           "MODEL_DEVICE": "cuda" if torch.cuda.is_available() else "mps",
           "DATA_FRACTION": 1.,
-          "loss_criterion": torch.nn.MSELoss(),
+          "loss_criterion": torch.nn.L1Loss(),
           "TARGET_SCALER": whiten,
-          "MODEL_CLASS": ViTCustom}
+          "MODEL_CLASS": ViTCustom,
+          "WEIGHT_DECAY": 5*10e-4}
 
 
 print("=========TRAINING CONFIG=========")

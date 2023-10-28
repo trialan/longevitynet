@@ -21,7 +21,8 @@ if __name__ == "__main__":
 
     model = CONFIG["MODEL_CLASS"]().to(device)
     criterion = CONFIG["loss_criterion"]
-    optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG["LR"])
+    optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG["LR"],
+                                 weight_deca=CONFIG["WEIGHT_DECAY"])
 
     train_losses = []
     val_losses = []
