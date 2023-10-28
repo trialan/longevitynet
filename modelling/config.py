@@ -19,9 +19,9 @@ CONFIG = {"N_EPOCHS" : 25,
           "MODEL_DEVICE": "cuda" if torch.cuda.is_available() else "mps",
           "DATA_FRACTION": 1.,
           "loss_criterion": torch.nn.L1Loss(),
-          "TARGET_SCALER": whiten,
+          "TARGET_SCALER": min_max_scale,
           "MODEL_CLASS": ResNet50,
-          "WEIGHT_DECAY": 5*10e-3}
+          "WEIGHT_DECAY": 5*10e-2}
 
 
 print("=========TRAINING CONFIG=========")
