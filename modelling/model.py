@@ -1,4 +1,3 @@
-import timm
 from torch.utils.data import Dataset
 from torchvision import models, transforms
 from torchvision.models.resnet import ResNet50_Weights
@@ -27,6 +26,9 @@ class FaceAgeDataset(Dataset):
         self.deltas = life_expectancies - self.mean_life_expectancy
         self.targets = scaling(self.deltas)
         self.life_expectancies = life_expectancies
+        gender_probs = [get_gender_probs(f) for f in image_paths]
+        self.man_probs = [p_man for (p_man, p_woman) in gender_probs]
+        self.woman_probs = [p_woman for (p_man, p_woman) in gender_probs]
 
     def __len__(self):
         return len(self.image_paths)
@@ -38,7 +40,8 @@ class FaceAgeDataset(Dataset):
         age = self.ages[idx]
         target = self.targets[idx]
         life_expectancy = self.life_expectancies[idx]
-        p_man, p_woman = get_gender_probs(img_path)
+        p_man = self.man_probs[ix]
+        p_woman = self.woman_probs[ix]
         return img, torch.tensor([age]).float(), p_man, p_woman, torch.tensor([target]).float()
 
 
