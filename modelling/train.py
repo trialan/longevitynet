@@ -32,12 +32,14 @@ if __name__ == "__main__":
         model.train()
         train_loss = 0
 
-        for idx, (imgs, ages, target) in enumerate(tqdm.tqdm(train_dataloader)):
+        for idx, (imgs, ages,p_man, p_woman, target) in enumerate(tqdm.tqdm(train_dataloader)):
             imgs = imgs.to(device)
             ages = ages.to(device)
             target = target.to(device)
+            p_man = p_man.to(device)
+            p_woman = p_woman.to(device)
 
-            output = model(imgs, ages)
+            output = model(imgs, ages, p_man, p_woman)
             loss = criterion(output, target)
             train_loss += loss.item()
 

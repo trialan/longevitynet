@@ -8,6 +8,8 @@ import cv2
 import numpy as np
 import torch
 
+from life_expectancy.modelling.utils import get_gender_probs
+
 
 preprocess = transforms.Compose([
     transforms.ToPILImage(),
@@ -36,10 +38,8 @@ class FaceAgeDataset(Dataset):
         age = self.ages[idx]
         target = self.targets[idx]
         life_expectancy = self.life_expectancies[idx]
-
-        return img, torch.tensor([age]).float(), torch.tensor([target]).float()
-
-
+        p_man, p_woman = get_gender_probs(img_path)
+        return img, torch.tensor([age]).float(), p_man, p_woman, torch.tensor([target]).float()
 
 
 class ResNet(torch.nn.Module):
@@ -49,19 +49,13 @@ class ResNet(torch.nn.Module):
 
     def _initialize_weights(self):
         self.cnn.fc = torch.nn.Linear(self.cnn.fc.in_features, 500)
-        self.fc1 = torch.nn.Linear(504, 250)  # 501 + 3 = 504
+        self.fc1 = torch.nn.Linear(503, 250)
         self.fc2 = torch.nn.Linear(250, 1)
-        dropout_prob = 0.5
-        self.dropout_after_cnn = torch.nn.Dropout(dropout_prob)
-        self.dropout_after_relu = torch.nn.Dropout(dropout_prob)
 
-    def forward(self, img, age):
+    def forward(self, img, age, p_man, p_woman):
         x = self.cnn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
-        age_square = torch.square(age)
-        age_cube = torch.pow(age, 3)
-        age_sqrt = torch.sqrt(age)
-        x = torch.cat((x, age, age_square, age_cube, age_sqrt), dim=1)
+        x = torch.cat((x, age, p_man, p_woman), dim=1)
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
@@ -114,7 +108,7 @@ class VGG16(VGG):
 
 
 class EfficientNetCustom(torch.nn.Module):
-    def __init__(self, model_name='efficientnet-b0', pretrained=True):
+    def __init__(self, model_name='efficientnet-b6', pretrained=True):
         super(EfficientNetCustom, self).__init__()
         self.cnn = EfficientNet.from_pretrained(model_name) if pretrained else EfficientNet.from_name(model_name)
         self._initialize_weights()
