@@ -40,6 +40,8 @@ class FaceAgeDataset(Dataset):
         return img, torch.tensor([age]).float(), torch.tensor([target]).float()
 
 
+
+
 class ResNet(torch.nn.Module):
     def __init__(self, pretrained=True):
         super(ResNet, self).__init__()
@@ -47,20 +49,20 @@ class ResNet(torch.nn.Module):
 
     def _initialize_weights(self):
         self.cnn.fc = torch.nn.Linear(self.cnn.fc.in_features, 500)
-        self.fc1 = torch.nn.Linear(501, 250)
+        self.fc1 = torch.nn.Linear(504, 250)  # 501 + 3 = 504
         self.fc2 = torch.nn.Linear(250, 1)
         dropout_prob = 0.5
-        #print(f"DROPOUT: {dropout_prob}")
         self.dropout_after_cnn = torch.nn.Dropout(dropout_prob)
         self.dropout_after_relu = torch.nn.Dropout(dropout_prob)
 
     def forward(self, img, age):
         x = self.cnn(img)
-        #x = self.dropout_after_cnn(x)
         x = torch.flatten(x, 1)  # Flatten the CNN output
-        x = torch.cat((x, age), dim=1)  # Concatenate age
+        age_square = torch.square(age)
+        age_cube = torch.pow(age, 3)
+        age_sqrt = torch.sqrt(age)
+        x = torch.cat((x, age, age_square, age_cube, age_sqrt), dim=1)
         x = torch.relu(self.fc1(x))
-        #x = self.dropout_after_relu(x)
         x = self.fc2(x)
         return x
 
