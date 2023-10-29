@@ -42,8 +42,8 @@ def get_train_dataset(config):
 def get_val_test_datasets(config):
     scaling = config["TARGET_SCALER"]
     image_paths = get_val_test_image_paths()
-    num_test = int(0.3 * len(image_paths) * config["DATA_FRACTION"])
-    num_val = int((len(image_paths) - num_test) * config["DATA_FRACTION"])
+    num_test = int(0.3 * len(image_paths)
+    num_val = int((len(image_paths) - num_test)
 
     test_dataset = _create_dataset_from_paths(image_paths[:num_test],
                                               scaling)
