@@ -89,13 +89,13 @@ class VGG(torch.nn.Module):
 
     def _initialize_weights(self):
         self.cnn.classifier[6] = torch.nn.Linear(self.cnn.classifier[6].in_features, 500)
-        self.fc1 = torch.nn.Linear(501, 250)
+        self.fc1 = torch.nn.Linear(503, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
-    def forward(self, img, age):
+    def forward(self, img, age, p_man, p_woman):
         x = self.cnn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
-        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.cat((x, age, p_man, p_woman), dim=1)
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
@@ -123,7 +123,7 @@ class EfficientNetCustom(torch.nn.Module):
 
     def _initialize_weights(self):
         self.cnn._fc = torch.nn.Linear(self.cnn._fc.in_features, 500)
-        self.fc1 = torch.nn.Linear(501, 250)
+        self.fc1 = torch.nn.Linear(503, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
     def _freeze_layers(self):
@@ -133,10 +133,10 @@ class EfficientNetCustom(torch.nn.Module):
                 for param in block.parameters():
                     param.requires_grad = False
 
-    def forward(self, img, age):
+    def forward(self, img, age, p_man, p_woman):
         x = self.cnn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
-        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.cat((x, age, p_man, p_woman), dim=1)
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
@@ -155,14 +155,14 @@ class ViTCustom(torch.nn.Module):
 
     def _initialize_weights(self):
         self.cnn.head = torch.nn.Linear(self.cnn.head.in_features, 500)
-        self.fc1 = torch.nn.Linear(501, 250)
+        self.fc1 = torch.nn.Linear(503, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
     def forward(self, img, age):
         x = self.cnn(img)
         x = self.dropout_after_cnn(x)  # Dropout after CNN
         x = torch.flatten(x, 1)  # Flatten the CNN output
-        x = torch.cat((x, age), dim=1)  # Concatenate age
+        x = torch.cat((x, age, p_man, p_woman), dim=1)
         x = torch.relu(self.fc1(x))
         x = self.dropout_after_relu(x)  # Dropout after ReLU
         x = self.fc2(x)
