@@ -76,7 +76,7 @@ class ResNet50(ResNet):
         self._initialize_weights()
 
         for param in self.cnn.parameters():
-            param.requires_grad = True
+            param.requires_grad = False
 
         for param in self.cnn.layer4.parameters():
             param.requires_grad = True
