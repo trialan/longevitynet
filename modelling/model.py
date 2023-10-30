@@ -1,3 +1,4 @@
+from tqdm import tqdm
 from torch.utils.data import Dataset
 from torchvision import models, transforms
 from torchvision.models.resnet import ResNet50_Weights
@@ -17,18 +18,16 @@ preprocess = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-
 class FaceAgeDataset(Dataset):
-    def __init__(self, image_paths, ages, life_expectancies, scaling):
+    def __init__(self, image_paths, ages, life_expectancies, man_probs, woman_probs, scaling):
         self.image_paths = image_paths
         self.ages = ages
         self.mean_life_expectancy = np.mean(life_expectancies)
         self.deltas = life_expectancies - self.mean_life_expectancy
         self.targets = scaling(self.deltas)
         self.life_expectancies = life_expectancies
-        gender_probs = [get_gender_probs(f) for f in image_paths]
-        self.man_probs = [p_man for (p_man, p_woman) in gender_probs]
-        self.woman_probs = [p_woman for (p_man, p_woman) in gender_probs]
+        self.man_probs = man_probs
+        self.woman_probs = woman_probs
 
     def __len__(self):
         return len(self.image_paths)
@@ -40,9 +39,14 @@ class FaceAgeDataset(Dataset):
         age = self.ages[idx]
         target = self.targets[idx]
         life_expectancy = self.life_expectancies[idx]
-        p_man = self.man_probs[ix]
-        p_woman = self.woman_probs[ix]
-        return img, torch.tensor([age]).float(), p_man, p_woman, torch.tensor([target]).float()
+        p_man = self.man_probs[idx]
+        p_woman = self.woman_probs[idx]
+        item = {'img': img,
+                'age': torch.tensor([age]).float(),
+                'p_man': p_man,
+                'p_woman': p_woman,
+                'target': torch.tensor([target]).float()}
+        return item
 
 
 class ResNet(torch.nn.Module):

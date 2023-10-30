@@ -8,7 +8,8 @@ from life_expectancy.analysis.eval import print_validation_stats_table
 from life_expectancy.modelling.config import CONFIG
 from life_expectancy.modelling.data import get_dataset_dict
 from life_expectancy.modelling.model import ResNet50, VGG16
-from life_expectancy.modelling.utils import set_seed, save_model
+from life_expectancy.modelling.utils import (set_seed, save_model,
+                                             unpack_model_input)
 
 device = torch.device(CONFIG["MODEL_DEVICE"])
 
@@ -32,14 +33,10 @@ if __name__ == "__main__":
         model.train()
         train_loss = 0
 
-        for idx, (imgs, ages, p_man, p_woman, target) in enumerate(tqdm.tqdm(train_dataloader)):
-            imgs = imgs.to(device)
-            ages = ages.to(device)
-            target = target.to(device)
-            p_man = p_man.to(device)
-            p_woman = p_woman.to(device)
-
-            output = model(imgs, ages, p_man, p_woman)
+        for idx, data in enumerate(tqdm.tqdm(train_dataloader)):
+            model_input = unpack_model_input(data, device)
+            target = data['target'].to(device)
+            output = model(*model_input)
             loss = criterion(output, target)
             train_loss += loss.item()
 

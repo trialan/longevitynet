@@ -1,29 +1,27 @@
 import os
+from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import random
 from datetime import datetime
 from deepface import DeepFace
+import cv2
+from torchvision import models, transforms
 
 from life_expectancy import get_repo_dir
 
 DIR_PATH = get_repo_dir()
 CKPT_PATH = DIR_PATH + "/saved_model_binaries"
 
-gender_map = {"Man": 0, "Woman": 1}
 
-def get_gender_probs(image):
-    out    = DeepFace.analyze(image,
-                              actions=["gender"],
-                              enforce_detection=False)
-
-    gender_probs = out[0]['gender']
-    p_man = gender_probs['Man']
-    p_woman = gender_probs['Woman']
-    return p_man, p_woman
-
-
+def unpack_model_input(data, device):
+    """ data is a row of the dataloader """
+    imgs = data['img'].to(device)
+    ages = data['age'].to(device)
+    p_man = data['p_man'].to(torch.float32).to(device).unsqueeze(-1)
+    p_woman = data['p_woman'].to(torch.float32).to(device).unsqueeze(-1)
+    return imgs, ages, p_man, p_woman
 
 
 def min_max_scale(data):
@@ -53,5 +51,16 @@ def save_model(model, val_loss, epoch):
     torch.save(model.state_dict(),
                f"{CKPT_PATH}/best_model_{timestamp}_{val_loss_str}.pth")
     print(f"New best model saved at epoch: {epoch+1} with Val Loss: {val_loss}")
+
+
+def get_gender_probs(image_path):
+    out    = DeepFace.analyze(image_path,
+                              actions=["gender"],
+                              enforce_detection=False)
+
+    gender_probs = out[0]['gender']
+    p_man = gender_probs['Man']
+    p_woman = gender_probs['Woman']
+    return p_man, p_woman
 
 
