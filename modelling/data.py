@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader, random_split, Subset
 
 from life_expectancy.modelling.model import FaceAgeDataset
 from life_expectancy.modelling.config import REPO_DIR
+from life_expectancy.modelling.utils import set_seed
 
 
 def get_dataset_dict(config):
@@ -60,13 +61,23 @@ def get_train_image_paths(ds_version):
 
 
 def get_val_test_image_paths():
-    image_paths = np.array(glob.glob(f'{REPO_DIR}/datasets/validation_and_test_data/*.jpg'))
+    validation_data = f'{REPO_DIR}/datasets/validation_and_test_data_v5'
+    print(f"Validation data source {validation_data}")
+    image_paths = np.array(glob.glob(f'{validation_data}/*.jpg'))
     return image_paths
+
+
+def extract_probs(f):
+    p_man = float(f.split('_pman_')[1].split('_')[0].replace('p','.'))
+    p_woman = float(f.split('_pwoman_')[1].split(".jpg")[0].split('_')[0].replace('p','.'))
+    return {"p_man": p_man, "p_woman": p_woman}
 
 
 def get_file_data(p):
     name = get_person_name(p)
-    img_date = int(p.split('data:')[-1][:-4])
+    probs = extract_probs(p)
+    p_man, p_woman = probs['p_man'], probs['p_woman']
+    img_date = int(p.split('data:')[-1][:4])
     death_date = int(p.split('death:')[-1][:4])
     birth_date = int(p.split('birth:')[-1][:4])
     data = {"death": death_date,
@@ -74,7 +85,9 @@ def get_file_data(p):
             "age": img_date - birth_date,
             "person_name": name,
             "img_date": img_date,
-            "life_expectancy": death_date - img_date}
+            "life_expectancy": death_date - img_date,
+            "p_man": p_man,
+            "p_woman": p_woman}
     assert_name_is_proper(name)
     return data
 
@@ -93,9 +106,11 @@ def _create_dataset_from_paths(image_paths, scaling):
     death_dates = [d['death'] for d in image_data]
     birth_dates = [d['birth'] for d in image_data]
     ages = [d['age'] for d in image_data]
+    man_probs = [d['p_man'] for d in image_data]
+    woman_probs = [d['p_woman'] for d in image_data]
     life_expectancies = [d['life_expectancy'] for d in image_data]
     assert_life_expectancy_positive(life_expectancies)
-    return FaceAgeDataset(image_paths, ages, life_expectancies, scaling)
+    return FaceAgeDataset(image_paths, ages, life_expectancies, man_probs, woman_probs, scaling)
 
 
 def assert_life_expectancy_positive(life_expectancies):

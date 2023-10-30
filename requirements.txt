@@ -9,3 +9,4 @@ torchvision
 tqdm
 prettytable
 timm
+deepface
