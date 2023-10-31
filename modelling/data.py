@@ -42,7 +42,7 @@ def get_train_dataset(config):
 
 def get_val_test_datasets(config):
     scaling = config["TARGET_SCALER"]
-    image_paths = get_val_test_image_paths()
+    image_paths = get_val_test_image_paths(config["DS_VERSION"])
     num_test = int(0.3 * len(image_paths))
     num_val = int(len(image_paths) - num_test)
 
@@ -60,8 +60,8 @@ def get_train_image_paths(ds_version):
     return image_paths
 
 
-def get_val_test_image_paths():
-    validation_data = f'{REPO_DIR}/datasets/validation_and_test_data_v5'
+def get_val_test_image_paths(ds_version):
+    validation_data = f'{REPO_DIR}/datasets/validation_and_test_data_{ds_version}'
     image_paths = np.array(glob.glob(f'{validation_data}/*.jpg'))
     return image_paths
 

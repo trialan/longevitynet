@@ -1,4 +1,3 @@
-import timm
 from tqdm import tqdm
 from torch.utils.data import Dataset
 from torchvision import models, transforms
@@ -8,6 +7,9 @@ from efficientnet_pytorch import EfficientNet
 import cv2
 import numpy as np
 import torch
+
+if torch.cuda.is_available():
+    import timm
 
 from life_expectancy.modelling.utils import get_gender_probs
 
