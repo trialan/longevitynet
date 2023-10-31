@@ -20,7 +20,7 @@ CONFIG = {"N_EPOCHS" : 25,
           "DATA_FRACTION": 1.0,
           "loss_criterion": torch.nn.L1Loss(),
           "TARGET_SCALER": min_max_scale,
-          "MODEL_CLASS": VGG16, 
+          "MODEL_CLASS": EfficientNetCustom,
           "WEIGHT_DECAY": 0.0}
 
 
