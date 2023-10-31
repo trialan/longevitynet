@@ -1,3 +1,4 @@
+import timm
 from tqdm import tqdm
 from torch.utils.data import Dataset
 from torchvision import models, transforms
