@@ -10,4 +10,4 @@ The methodology is to collect a large dataset of pictures of faces and their dat
 Hardware requirements: the models can be trained on CPU, but will be faster with a CUDA backend. MPS backend (Apple Silicon) is also available as of torch version 2.2.0.dev20231013. I highly recommend using this if you are training on a MacBook.
 
 # Performance
-At present, the best model trained with this repo has a **MAE of 6.3 years**. For comparison, the best age prediction models have an MAE of 3 to 8 years.
+At present, the best model trained with this repo has a **MAE of 6.3 years**. For comparison, the best age prediction models have an [MAE of 3.7 years](https://paperswithcode.com/sota/age-estimation-on-utkface).
