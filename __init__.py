@@ -6,3 +6,5 @@ def get_repo_dir():
     else:
         REPO_DIR = "/Users/thomasrialan/Documents/code/longevity_project/life_expectancy"
     return REPO_DIR
+
+REPO_DIR = get_repo_dir()

@@ -146,15 +146,11 @@ class EfficientNetCustom(torch.nn.Module):
 
 
 class ViTCustom(torch.nn.Module):
-    def __init__(self, model_name='vit_base_patch16_224', pretrained=True, dropout_prob=0.5):
+    def __init__(self, model_name='vit_base_patch16_224', pretrained=True):
         super(ViTCustom, self).__init__()
-        print(f"======{dropout_prob} DROPOUT=======")
         self.cnn = timm.create_model(model_name, pretrained=pretrained)
         self._initialize_weights()
 
-        # Define dropout layers
-        self.dropout_after_cnn = torch.nn.Dropout(dropout_prob)
-        self.dropout_after_relu = torch.nn.Dropout(dropout_prob)
 
     def _initialize_weights(self):
         self.cnn.head = torch.nn.Linear(self.cnn.head.in_features, 500)
