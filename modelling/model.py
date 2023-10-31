@@ -45,6 +45,8 @@ class FaceAgeDataset(Dataset):
                 'age': torch.tensor([age]).float(),
                 'p_man': p_man,
                 'p_woman': p_woman,
+                'neg_p_man': 1 - p_man,
+                'neg_p_woman': 1 - p_woman,
                 'target': torch.tensor([target]).float()}
         return item
 
@@ -56,13 +58,13 @@ class ResNet(torch.nn.Module):
 
     def _initialize_weights(self):
         self.cnn.fc = torch.nn.Linear(self.cnn.fc.in_features, 500)
-        self.fc1 = torch.nn.Linear(503, 250)
+        self.fc1 = torch.nn.Linear(505, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
-    def forward(self, img, age, p_man, p_woman):
+    def forward(self, img, age, p_man, p_woman, np_man, np_woman):
         x = self.cnn(img)
         x = torch.flatten(x, 1)  # Flatten the CNN output
-        x = torch.cat((x, age, p_man, p_woman), dim=1)
+        x = torch.cat((x, age, p_man, p_woman, np_man, np_woman), dim=1)
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
@@ -158,13 +160,11 @@ class ViTCustom(torch.nn.Module):
         self.fc1 = torch.nn.Linear(503, 250)
         self.fc2 = torch.nn.Linear(250, 1)
 
-    def forward(self, img, age):
+    def forward(self, img, age, p_man, p_woman):
         x = self.cnn(img)
-        x = self.dropout_after_cnn(x)  # Dropout after CNN
         x = torch.flatten(x, 1)  # Flatten the CNN output
         x = torch.cat((x, age, p_man, p_woman), dim=1)
         x = torch.relu(self.fc1(x))
-        x = self.dropout_after_relu(x)  # Dropout after ReLU
         x = self.fc2(x)
         return x
 

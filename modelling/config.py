@@ -21,7 +21,7 @@ CONFIG = {"N_EPOCHS" : 25,
           "loss_criterion": torch.nn.L1Loss(),
           "TARGET_SCALER": min_max_scale,
           "MODEL_CLASS": ResNet50,
-          "WEIGHT_DECAY": 0.05}
+          "WEIGHT_DECAY": 0.0}
 
 
 print("=========TRAINING CONFIG=========")
