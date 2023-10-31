@@ -21,7 +21,9 @@ def unpack_model_input(data, device):
     ages = data['age'].to(device)
     p_man = data['p_man'].to(torch.float32).to(device).unsqueeze(-1)
     p_woman = data['p_woman'].to(torch.float32).to(device).unsqueeze(-1)
-    return imgs, ages, p_man, p_woman
+    np_woman = data['neg_p_woman'].to(torch.float32).to(device).unsqueeze(-1)
+    np_man = data['neg_p_man'].to(torch.float32).to(device).unsqueeze(-1)
+    return imgs, ages, p_man, p_woman, np_man, np_woman
 
 
 def min_max_scale(data):
