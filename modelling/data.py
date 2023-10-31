@@ -62,7 +62,6 @@ def get_train_image_paths(ds_version):
 
 def get_val_test_image_paths():
     validation_data = f'{REPO_DIR}/datasets/validation_and_test_data_v5'
-    print(f"====Validation data source:====\n {validation_data}")
     image_paths = np.array(glob.glob(f'{validation_data}/*.jpg'))
     return image_paths
 

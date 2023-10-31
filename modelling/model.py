@@ -118,7 +118,7 @@ class VGG16(VGG):
 
 
 class EfficientNetCustom(torch.nn.Module):
-    def __init__(self, model_name='efficientnet-b0', pretrained=True):
+    def __init__(self, model_name='efficientnet-b1', pretrained=True):
         super(EfficientNetCustom, self).__init__()
         self.cnn = EfficientNet.from_pretrained(model_name) if pretrained else EfficientNet.from_name(model_name)
         self._initialize_weights()
