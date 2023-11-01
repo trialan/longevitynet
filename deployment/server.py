@@ -38,7 +38,6 @@ def get_gender_probs():
     p_woman = torch.tensor([[p_woman]])
     return p_man, p_woman
 
-    
 
 def convert_to_years(raw_prediction):
     return raw_prediction
@@ -46,9 +45,9 @@ def convert_to_years(raw_prediction):
 
 def get_image(request):
     image = request.files['file']
-    image = Image.open(io.BytesIO(image.read()))
     with open("image.jpg", "w") as f:
         f.write(image.read())
+    image = Image.open(io.BytesIO(image.read()))
     image = np.array(image)
     image = preprocess(image)
     return image
