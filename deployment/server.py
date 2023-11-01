@@ -6,18 +6,20 @@ import torch
 import torchvision.transforms as transforms
 
 from longevitynet.modelling.model import preprocess, ResNet50
-from longevitynet.modelling.utils import undo_min_max_scaling
+from longevitynet.modelling.utils import undo_min_max_scaling, get_gender_probs
 
 app = Flask(__name__)
 
 model = ResNet50()
-model.load_state_dict(torch.load('longevitynet/deployment/model.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load('longevitynet/deployment/best_model_mae_6p3.pth',
+                                 map_location=torch.device('cpu')))
 model.eval()
 
 
 @app.route('/predict', methods=['POST'])
 def predict():
     image = get_image(request)
+    p_man, p_woman = get_gender_probs("image.jpg")
     age_tensor = get_age(request)
     prediction = get_prediction(image, age_tensor)
     return {'longevitynet': round(prediction, 2)}
@@ -31,17 +33,14 @@ def get_prediction(image, age_tensor):
     
 
 def convert_to_years(raw_prediction):
-    min_delta_value = np.min(dataset.deltas)
-    max_delta_value = np.max(dataset.deltas)
-    prediction = undo_min_max_scaling(raw_prediction,
-                                      min_val = min_delta_value,
-                                      max_val = max_delta_value)
-    return prediction
+    return raw_prediction
 
 
 def get_image(request):
     image = request.files['file']
     image = Image.open(io.BytesIO(image.read()))
+    with open("image.jpg", "w") as f:
+        f.write(image.read())
     image = np.array(image)
     image = preprocess(image)
     return image
