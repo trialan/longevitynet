@@ -23,7 +23,7 @@ def predict():
     age_tensor = get_age(request)
     inputs = [image, age_tensor, p_man, p_woman, np_man, np_woman]
     prediction = get_prediction(*inputs)
-    return {'longevitynet': round(prediction, 2)}
+    return {'life_expectancy': round(prediction, 2)}
 
 
 def get_image(request):
