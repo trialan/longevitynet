@@ -22,7 +22,6 @@ def predict():
     p_man, p_woman, np_man, np_woman = server_get_gender_probs()
     age_tensor = get_age(request)
     inputs = [image, age_tensor, p_man, p_woman, np_man, np_woman]
-    import pdb;pdb.set_trace() 
     prediction = get_prediction(*inputs)
     return {'longevitynet': round(prediction, 2)}
 
@@ -51,10 +50,10 @@ def get_prediction(image, age_tensor, p_man, p_woman, np_man, np_woman):
 
 def server_get_gender_probs():
     p_man, p_woman = get_gender_probs("image.jpg")
-    p_man = torch.tensor([[p_man]])
-    p_woman = torch.tensor([[p_woman]])
-    np_man = torch.tensor([[1-p_man]])
-    np_woman = torch.tensor([[1-p_woman]])
+    p_man = torch.tensor([[p_man]], dtype=torch.float32)
+    p_woman = torch.tensor([[p_woman]], dtype=torch.float32)
+    np_man = torch.tensor([[1-p_man]], dtype=torch.float32)
+    np_woman = torch.tensor([[1-p_woman]], dtype=torch.float32)
     return p_man, p_woman, np_man, np_woman
 
 
