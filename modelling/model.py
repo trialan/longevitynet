@@ -11,7 +11,7 @@ import torch
 if torch.cuda.is_available():
     import timm
 
-from life_expectancy.modelling.utils import get_gender_probs
+from longevitynet.modelling.utils import get_gender_probs
 
 
 preprocess = transforms.Compose([

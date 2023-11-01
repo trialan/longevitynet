@@ -1,13 +1,13 @@
 import os
 import torch
 from pprint import pprint
-from life_expectancy.modelling.utils import min_max_scale, whiten
-from life_expectancy.modelling.model import (ResNet50,
+from longevitynet.modelling.utils import min_max_scale, whiten
+from longevitynet.modelling.model import (ResNet50,
                                              VGG16,
                                              EfficientNetCustom,
                                              ViTCustom)
 
-from life_expectancy import get_repo_dir
+from longevitynet import get_repo_dir
 
 REPO_DIR = get_repo_dir()
 

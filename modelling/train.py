@@ -4,11 +4,11 @@ import torch
 import matplotlib.pyplot as plt
 from pprint import pprint
 
-from life_expectancy.analysis.eval import print_validation_stats_table
-from life_expectancy.modelling.config import CONFIG
-from life_expectancy.modelling.data import get_dataset_dict
-from life_expectancy.modelling.model import ResNet50, VGG16
-from life_expectancy.modelling.utils import (set_seed, save_model,
+from longevitynet.analysis.eval import print_validation_stats_table
+from longevitynet.modelling.config import CONFIG
+from longevitynet.modelling.data import get_dataset_dict
+from longevitynet.modelling.model import ResNet50, VGG16
+from longevitynet.modelling.utils import (set_seed, save_model,
                                              unpack_model_input)
 
 device = torch.device(CONFIG["MODEL_DEVICE"])

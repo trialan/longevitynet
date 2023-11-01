@@ -4,9 +4,9 @@ import random
 import torch
 from torch.utils.data import DataLoader, random_split, Subset
 
-from life_expectancy.modelling.model import FaceAgeDataset
-from life_expectancy.modelling.config import REPO_DIR
-from life_expectancy.modelling.utils import set_seed
+from longevitynet.modelling.model import FaceAgeDataset
+from longevitynet.modelling.config import REPO_DIR
+from longevitynet.modelling.utils import set_seed
 
 
 def get_dataset_dict(config):

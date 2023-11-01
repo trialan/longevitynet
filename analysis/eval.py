@@ -4,8 +4,8 @@ import glob
 import numpy as np
 import torch
 
-from life_expectancy.modelling.config import CONFIG
-from life_expectancy.modelling.utils import unpack_model_input
+from longevitynet.modelling.config import CONFIG
+from longevitynet.modelling.utils import unpack_model_input
 
 DEVICE = CONFIG["MODEL_DEVICE"]
 

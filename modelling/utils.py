@@ -9,7 +9,7 @@ from deepface import DeepFace
 import cv2
 from torchvision import models, transforms
 
-from life_expectancy import get_repo_dir
+from longevitynet import get_repo_dir
 
 DIR_PATH = get_repo_dir()
 CKPT_PATH = DIR_PATH + "/saved_model_binaries"

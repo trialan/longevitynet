@@ -8,7 +8,7 @@ import glob
 import matplotlib.pyplot as plt
 import numpy as np
 
-from life_expectancy.modelling.data import get_file_data, REPO_DIR
+from longevitynet.modelling.data import get_file_data, REPO_DIR
 
 train_data = glob.glob(f'{REPO_DIR}/datasets/dataset_v5/*.jpg')
 test_data = glob.glob(f'{REPO_DIR}/datasets/validation_and_test_data_v5/*.jpg')

@@ -1,7 +1,7 @@
 import pytest
 
-from life_expectancy.modelling.config import CONFIG
-from life_expectancy.modelling.data import (get_train_image_paths,
+from longevitynet.modelling.config import CONFIG
+from longevitynet.modelling.data import (get_train_image_paths,
                                             get_val_test_image_paths,
                                             get_file_data)
 

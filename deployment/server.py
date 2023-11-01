@@ -5,16 +5,16 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 
-from life_expectancy.modelling.model import preprocess, ResNet50
-from life_expectancy.modelling.train import generate_dataset
-from life_expectancy.modelling.utils import undo_min_max_scaling
+from longevitynet.modelling.model import preprocess, ResNet50
+from longevitynet.modelling.train import generate_dataset
+from longevitynet.modelling.utils import undo_min_max_scaling
 
 app = Flask(__name__)
 
 model = ResNet50()
 """
 old: needs fixing, don't require age anymore
-model.load_state_dict(torch.load('life_expectancy/deployment/model.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load('longevitynet/deployment/model.pth', map_location=torch.device('cpu')))
 model.eval()
 dataset = generate_dataset()
 """
@@ -25,7 +25,7 @@ def predict():
     image = get_image(request)
     age_tensor = get_age(request)
     prediction = get_prediction(image, age_tensor)
-    return {'life_expectancy': round(prediction, 2)}
+    return {'longevitynet': round(prediction, 2)}
 
 
 def get_prediction(image, age_tensor):

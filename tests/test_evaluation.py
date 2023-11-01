@@ -2,13 +2,13 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from life_expectancy.modelling.utils import min_max_scale, set_seed
-from life_expectancy.modelling.config import CONFIG
-from life_expectancy.modelling.data import (get_val_test_datasets,
+from longevitynet.modelling.utils import min_max_scale, set_seed
+from longevitynet.modelling.config import CONFIG
+from longevitynet.modelling.data import (get_val_test_datasets,
                                             get_train_dataset)
-from life_expectancy.analysis.eval import (get_mean_guess_stats,
+from longevitynet.analysis.eval import (get_mean_guess_stats,
                                            get_model_stats)
-from life_expectancy.modelling.model import ResNet
+from longevitynet.modelling.model import ResNet
 
 
 CONFIG["BATCH_SIZE"] = 1
