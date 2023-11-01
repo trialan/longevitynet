@@ -52,7 +52,9 @@ def server_get_gender_probs():
     p_man, p_woman = get_gender_probs("image.jpg")
     p_man = torch.tensor([[p_man]])
     p_woman = torch.tensor([[p_woman]])
-    return p_man, p_woman
+    np_man = torch.tensor([[1-p_man]])
+    np_woman = torch.tensor([[1-p_woman]])
+    return p_man, p_woman, np_man, np_woman
 
 
 def convert_to_years(raw_prediction):
