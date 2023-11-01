@@ -25,6 +25,20 @@ def predict():
     return {'longevitynet': round(prediction, 2)}
 
 
+def get_image(request):
+    image = request.files['file']
+
+    with open("image.jpg", "wb") as f: #open in binary mode
+        f.write(image.read())
+    # Reset the image file pointer to the beginning for subsequent reads
+    image.seek(0)
+
+    image = Image.open(io.BytesIO(image.read()))
+    image = np.array(image)
+    image = preprocess(image)
+    return image
+
+
 def get_prediction(image, age_tensor, p_man, p_woman):
     output = model(image.unsqueeze(0), age_tensor, p_man, p_woman)
     raw_prediction = output.item()
@@ -41,16 +55,6 @@ def get_gender_probs():
 
 def convert_to_years(raw_prediction):
     return raw_prediction
-
-
-def get_image(request):
-    image = request.files['file']
-    with open("image.jpg", "w") as f:
-        f.write(image.read())
-    image = Image.open(io.BytesIO(image.read()))
-    image = np.array(image)
-    image = preprocess(image)
-    return image
 
 
 def get_age(request):
