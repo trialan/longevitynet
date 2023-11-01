@@ -6,18 +6,13 @@ import torch
 import torchvision.transforms as transforms
 
 from longevitynet.modelling.model import preprocess, ResNet50
-from longevitynet.modelling.train import generate_dataset
 from longevitynet.modelling.utils import undo_min_max_scaling
 
 app = Flask(__name__)
 
 model = ResNet50()
-"""
-old: needs fixing, don't require age anymore
 model.load_state_dict(torch.load('longevitynet/deployment/model.pth', map_location=torch.device('cpu')))
 model.eval()
-dataset = generate_dataset()
-"""
 
 
 @app.route('/predict', methods=['POST'])

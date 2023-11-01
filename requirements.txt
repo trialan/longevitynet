@@ -1,12 +1,13 @@
+cv2
 datetime
+deepface
 efficientnet_pytorch
 flask
 matplotlib
 numpy
 opencv-python
+prettytable
+timm
 torch
 torchvision
 tqdm
-prettytable
-timm
-deepface
