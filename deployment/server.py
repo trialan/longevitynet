@@ -19,7 +19,7 @@ model.eval()
 @app.route('/predict', methods=['POST'])
 def predict():
     image = get_image(request)
-    p_man, p_woman = get_gender_probs()
+    p_man, p_woman = server_get_gender_probs()
     age_tensor = get_age(request)
     prediction = get_prediction(image, age_tensor, p_man, p_woman)
     return {'longevitynet': round(prediction, 2)}
@@ -46,7 +46,7 @@ def get_prediction(image, age_tensor, p_man, p_woman):
     return prediction
 
 
-def get_gender_probs():
+def server_get_gender_probs():
     p_man, p_woman = get_gender_probs("image.jpg")
     p_man = torch.tensor([[p_man]])
     p_woman = torch.tensor([[p_woman]])
