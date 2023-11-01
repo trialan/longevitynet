@@ -19,9 +19,10 @@ model.eval()
 @app.route('/predict', methods=['POST'])
 def predict():
     image = get_image(request)
-    p_man, p_woman = server_get_gender_probs()
+    p_man, p_woman, np_man, np_woman = server_get_gender_probs()
     age_tensor = get_age(request)
-    prediction = get_prediction(image, age_tensor, p_man, p_woman)
+    inputs = [image, age_tensor, p_man, p_woman, np_man, np_woman]
+    prediction = get_prediction(*inputs)
     return {'longevitynet': round(prediction, 2)}
 
 
@@ -39,8 +40,9 @@ def get_image(request):
     return image
 
 
-def get_prediction(image, age_tensor, p_man, p_woman):
-    output = model(image.unsqueeze(0), age_tensor, p_man, p_woman)
+def get_prediction(image, age_tensor, p_man, p_woman, np_man, np_woman):
+    output = model(image.unsqueeze(0), age_tensor, p_man, p_woman, np_man,
+                   np_woman)
     raw_prediction = output.item()
     prediction = convert_to_years(raw_prediction)
     return prediction
