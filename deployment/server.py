@@ -22,6 +22,7 @@ def predict():
     p_man, p_woman, np_man, np_woman = server_get_gender_probs()
     age_tensor = get_age(request)
     inputs = [image, age_tensor, p_man, p_woman, np_man, np_woman]
+    import pdb;pdb.set_trace() 
     prediction = get_prediction(*inputs)
     return {'longevitynet': round(prediction, 2)}
 
