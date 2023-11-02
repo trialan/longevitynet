@@ -15,6 +15,17 @@ DIR_PATH = get_repo_dir()
 CKPT_PATH = DIR_PATH + "/saved_model_binaries"
 
 
+def convert_prediction_to_years(pred, dataset):
+    import pdb;pdb.set_trace() 
+    unscaled_target = dataset.deltas
+    unscaled_delta_pred = undo_min_max_scaling(pred,
+                                               min(unscaled_target),
+                                               max(unscaled_target))
+    mean_life_expect = dataset.mean_life_expectancy
+    out = unscaled_delta_pred + mean_life_expect
+    return out
+
+
 def unpack_model_input(data, device):
     """ data is a row of the dataloader """
     imgs = data['img'].to(device)

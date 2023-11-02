@@ -46,11 +46,11 @@ class AnalysisGUI:
 
 
             self.screen.blit(image, (0, 0))
-            _, _, true_longevitynet, _ = self.dataset[self.index]
-            predicted_age = self.predict_longevitynet()
-            true_longevitynet_text = self.font.render(f"True Life Expectancy: {true_longevitynet.item():.2f} years", True, (255, 255, 255))
+            _, _, true_life_expectancy, _ = self.dataset[self.index]
+            predicted_age = self.predict_life_expectancy()
+            true_life_expectancy_text = self.font.render(f"True Life Expectancy: {true_life_expectancy.item():.2f} years", True, (255, 255, 255))
             predicted_age_text = self.font.render(f"Predicted Life Expectancy: {predicted_age:.2f} years", True, (255, 255, 255))
-            self.screen.blit(true_longevitynet_text, (10, self.height - 180))
+            self.screen.blit(true_life_expectancy_text, (10, self.height - 180))
             self.screen.blit(predicted_age_text, (10, self.height - 140))
 
             # Extract name from the image path
@@ -59,14 +59,14 @@ class AnalysisGUI:
             person_name_text = self.font.render(f"Name: {person_name}", True, (255, 255, 255))
             self.screen.blit(person_name_text, (10, self.height - 100))
 
-            difference = predicted_age - true_longevitynet.item()
+            difference = predicted_age - true_life_expectancy.item()
             difference_text = self.font.render(f"Difference: {difference:.2f} years", True, (255, 255, 255))
             self.screen.blit(difference_text, (10, self.height - 60))
 
             pygame.display.flip()
         pygame.quit()
 
-    def predict_longevitynet(self):
+    def predict_life_expectancy(self):
         image, _, _, _ = self.dataset[self.index]
         out = self.model(image.unsqueeze(0))
         out_in_years = convert_to_years(float(out), self.dataset)
@@ -78,11 +78,11 @@ def convert_to_years(raw_prediction, dataset):
     delta_prediction = undo_min_max_scaling(raw_prediction,
                                       min_val = min_delta_value,
                                       max_val = max_delta_value)
-    prediction = delta_prediction + dataset.mean_longevitynet
+    prediction = delta_prediction + dataset.mean_life_expectancy
     return prediction
 
 if __name__ == '__main__':
-    from longevitynet.modelling.train import DS_VERSION
+    from life_expectancy.modelling.train import DS_VERSION
     import torch
     model_dir = "/Users/thomasrialan/Documents/code/longevity_project/saved_model_binaries/"
     dataset = generate_dataset(DS_VERSION)

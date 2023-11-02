@@ -15,7 +15,7 @@ CONFIG = {"N_EPOCHS" : 25,
           "SEED" : 7457769,
           "LR" : 1e-3 / 3.,
           "BATCH_SIZE" : 128, #128 uses 18GB, i have 46GB
-          "DS_VERSION" : "v6",
+          "DS_VERSION" : "v5",
           "MODEL_DEVICE": "cuda" if torch.cuda.is_available() else "mps",
           "DATA_FRACTION": 1.0,
           "loss_criterion": torch.nn.L1Loss(),

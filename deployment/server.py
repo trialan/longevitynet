@@ -5,8 +5,11 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 
+from longevitynet.modelling.config import CONFIG
+from longevitynet.modelling.data import get_dataset_dict
 from longevitynet.modelling.model import preprocess, ResNet50
-from longevitynet.modelling.utils import undo_min_max_scaling, get_gender_probs
+from longevitynet.modelling.utils import (get_gender_probs,
+                                          convert_prediction_to_years)
 
 app = Flask(__name__)
 
@@ -15,15 +18,25 @@ model.load_state_dict(torch.load('longevitynet/deployment/best_model_mae_6p3.pth
                                  map_location=torch.device('cpu')))
 model.eval()
 
+dataset_dict = get_dataset_dict(CONFIG)
+train_dataset = dataset_dict['datasets']['train']
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    model_inputs = get_model_input(request)
+    prediction = get_prediction(*model_inputs)
+    life_expect = convert_prediction_to_years(prediction,
+                                              train_dataset)
+    return {'life_expectancy': round(life_expect, 2)}
+
+
+def get_model_input(request):
     image = get_image(request)
     p_man, p_woman, np_man, np_woman = server_get_gender_probs()
     age_tensor = get_age(request)
     inputs = [image, age_tensor, p_man, p_woman, np_man, np_woman]
-    prediction = get_prediction(*inputs)
-    return {'life_expectancy': round(prediction, 2)}
+    return inputs
 
 
 def get_image(request):
@@ -44,8 +57,7 @@ def get_prediction(image, age_tensor, p_man, p_woman, np_man, np_woman):
     output = model(image.unsqueeze(0), age_tensor, p_man, p_woman, np_man,
                    np_woman)
     raw_prediction = output.item()
-    prediction = convert_to_years(raw_prediction)
-    return prediction
+    return raw_prediction
 
 
 def server_get_gender_probs():
@@ -55,10 +67,6 @@ def server_get_gender_probs():
     np_man = torch.tensor([[1-p_man]], dtype=torch.float32)
     np_woman = torch.tensor([[1-p_woman]], dtype=torch.float32)
     return p_man, p_woman, np_man, np_woman
-
-
-def convert_to_years(raw_prediction):
-    return raw_prediction
 
 
 def get_age(request):
