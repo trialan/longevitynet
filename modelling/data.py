@@ -57,7 +57,6 @@ def get_val_test_datasets(config):
 
 def get_train_image_paths(ds_version):
     pattern = f'{REPO_DIR}/datasets/dataset_{ds_version}/*.jpg'
-    import pdb;pdb.set_trace() 
     image_paths = np.array(glob.glob(pattern))
     return image_paths
 

@@ -50,6 +50,7 @@ class FaceAgeDataset(Dataset):
                 'p_woman': p_woman,
                 'neg_p_man': 1 - p_man,
                 'neg_p_woman': 1 - p_woman,
+                'life_expectancy': self.life_expectancies[idx],
                 'target': torch.tensor([target]).float()}
         return item
 
