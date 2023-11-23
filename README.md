@@ -12,7 +12,6 @@ Hardware requirements: the models can be trained on CPU, but will be faster with
 # Performance
 At present, the best model trained with this repo has a <u>MAE of 6.3 years</u>. For comparison, the best age prediction models have an [MAE of 3.7 years](https://paperswithcode.com/sota/age-estimation-on-utkface).
 
-https://github.com/trialan/longevitynet/blob/main/lnn-example.mp4
-
+https://github.com/trialan/longevitynet/assets/16582240/d2f43a79-178a-4aa5-924e-750ca353a973
 # Dataset
 The current dataset, dataset_v4, is composed of 8297 training examples and 3500 test and validation examples. I cleaned it manually to remove any image with multiple people in it (with a bit of help from haar cascades and some NNs to count faces). One limitation of dataset_v4 is the gender and age imbalances: it skews older, and is composed of 92% men. I hope to address this in a future update. It is possible to downsaple dataset_v4 and get a balanced dataset, on which out-sample MAE is about 9 years.
